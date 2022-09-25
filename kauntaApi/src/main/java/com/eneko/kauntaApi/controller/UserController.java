@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
     private final UserRepository repo;
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable(name = "id") long id){
         if(repo.existsById(id)){
             User u = repo.findById(id).get();
@@ -22,7 +23,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/save")
+    @PostMapping("/save")
     public ResponseEntity<?> saveContador(@RequestBody User user){
         User u = repo.save(user);
         return ResponseEntity.ok(u);

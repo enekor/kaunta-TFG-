@@ -53,7 +53,9 @@ public class Mapper {
         ret.setDescription(dto.getDescription());
         ret.setActive(true);
         ret.setGroup(groupRepo.findById(dto.getGroup()).get());
-        ret.setImg(dto.getImg());
+        if(!dto.getImg().equals("")){
+            ret.setImg(dto.getImg());
+        }
         ret.setCount(dto.getCount());
 
         return ret;

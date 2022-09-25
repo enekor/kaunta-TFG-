@@ -17,7 +17,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column(unique = true)
     private String name;
+
     private String password;
 
     @OneToMany

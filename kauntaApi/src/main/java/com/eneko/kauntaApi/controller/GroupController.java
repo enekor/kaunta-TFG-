@@ -16,31 +16,32 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/group")
 public class GroupController {
     private final GroupRepository repo;
     private final UserRepository userRepo;
     private final CounterRepository counterRepo;
 
-    @GetMapping("/group/active/all")
+    @GetMapping("/active/all")
     public ResponseEntity<?> getActiveGroups(@PageableDefault(page = 0,size = 200) Pageable pageable){
         Page<Group> groups = repo.findAllByActive(pageable,true);
         return ResponseEntity.ok(groups);
     }
 
-    @GetMapping("/group/inactive/all")
+    @GetMapping("/inactive/all")
     public ResponseEntity<?> getInactiveGroups(@PageableDefault(page = 0,size = 200)Pageable pageable){
         Page<Group> groups = repo.findAllByActive(pageable,false);
         return ResponseEntity.ok(groups);
     }
 
-    @PostMapping("/group/save")
+    @PostMapping("/save")
     public ResponseEntity<?> saveGroup(@RequestBody GroupDTO dto){
         Group group = Mapper.getInstance().groupDtoToGroup(dto,userRepo,counterRepo);
         Group g = repo.save(group);
         return ResponseEntity.ok(g);
     }
 
-    @DeleteMapping("group/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteGroup(@PathVariable(name = "id") long id){
 
         HttpStatus status = null;
@@ -58,7 +59,7 @@ public class GroupController {
         return ResponseEntity.status(status).body(mensaje);
     }
 
-    @PostMapping("group/restore/{id}")
+    @PostMapping("/restore/{id}")
     public ResponseEntity<?> restoreGroup(@PathVariable(name = "id")long id){
 
         HttpStatus status = null;
