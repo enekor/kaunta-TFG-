@@ -1,4 +1,4 @@
-package com.kunta.kaunta_api.service;
+package com.kunta.kaunta_api.reporitory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
