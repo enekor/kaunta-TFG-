@@ -33,6 +33,6 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Grupo> gupos;
+    private List<Grupo> grupos;
     
 }

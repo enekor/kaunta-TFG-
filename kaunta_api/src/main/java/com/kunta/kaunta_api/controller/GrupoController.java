@@ -45,11 +45,11 @@ public class GrupoController {
         HttpStatus status = HttpStatus.ACCEPTED;
         String ans = "";
 
-        if(grupo.getId()!=-1){
+        if(grupo.getId() == -1){
             Grupo add = new Grupo();
             add.setNombre(grupo.getNombre());
             add.setActivo(true);
-            if(uRepo.existsById(grupo.getId())){
+            if(uRepo.existsById(grupo.getUser())){
                 add.setUser(uRepo.findById(grupo.getUser()).get());
                 
                 repo.save(add);
@@ -57,14 +57,12 @@ public class GrupoController {
                 ans = "Grupo creado";
             }else{
                 ans = "No existe usuario con id "+grupo.getUser();
-                status = HttpStatus.NOT_ACCEPTABLE;
+                status = HttpStatus.NOT_FOUND;
             }
         }else{
-            Grupo update = new Grupo();
-            update.setId(grupo.getId());
+            Grupo update = repo.findById(grupo.getId()).get();
             update.setNombre(grupo.getNombre());
             update.setUser(uRepo.findById(grupo.getUser()).get());
-            update.setActivo(true);
             repo.save(update);
 
             ans = "Grupo actualizado con exito";
@@ -84,7 +82,7 @@ public class GrupoController {
             status = HttpStatus.OK;
             ans = "Borrado con exito";
         }else{
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
             ans = "No existe grupo con id "+id;
         }
         return ResponseEntity.status(status).body(ans);
@@ -103,7 +101,7 @@ public class GrupoController {
             ans = "Grupo restaurado con exito";
 
         }else{
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
             ans = "No existe grupo con id "+id;
         }
 
