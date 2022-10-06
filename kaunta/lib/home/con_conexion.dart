@@ -1,12 +1,12 @@
 import 'package:flutter/widgets.dart';
 
-class NuevoContador extends StatelessWidget {
-  const NuevoContador({super.key});
+class ConConexion extends StatelessWidget {
+  const ConConexion({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text("Nuevo contador"),
+      child: Text("under development"),
     );
   }
 }
