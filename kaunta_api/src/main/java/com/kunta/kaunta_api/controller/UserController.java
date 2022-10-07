@@ -77,7 +77,7 @@ public class UserController {
             User u = new User();
             u.setName(userReg.getUser());
             u.setPassword(userReg.getPassword());
-            u.setGupos(new ArrayList<>());
+            u.setGrupos(new ArrayList<>());
             
             User ret = repo.save(u);
 

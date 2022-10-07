@@ -13,7 +13,12 @@ class SinConexion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     RxInt pagina = 0.obs;
-    var paginas = [verGrupos(), nuevoGrupo(), verContadores(), nuevoContador()];
+    var paginas = [
+      verGrupos(),
+      nuevoGrupo(),
+      verContadores(),
+      nuevoContador(context)
+    ];
 
     return Obx(
       () => Scaffold(

@@ -10,7 +10,7 @@ class Listado {
   Listado._internal();
 
   RxList<Grupo> grupos = <Grupo>[].obs;
-  Grupo gActual = Grupo();
+  Grupo gActual = Grupo(counters: <Contador>[].obs);
   Contador cActual = Contador();
 
   RxBool verGrupos = true.obs;

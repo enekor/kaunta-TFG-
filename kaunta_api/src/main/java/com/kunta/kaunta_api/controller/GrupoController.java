@@ -31,7 +31,7 @@ public class GrupoController {
 
         if(uRepo.existsById(id)){
             User u = uRepo.findById(id).get();
-            ans = u.getGupos();
+            ans = u.getGrupos();
             status = HttpStatus.OK;
         }else{
             ans = "No existe usuario con esa id";

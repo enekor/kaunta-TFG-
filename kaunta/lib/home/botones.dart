@@ -28,7 +28,8 @@ class Botones extends StatelessWidget {
                   child: Column(
                     children: [
                       IconButton(
-                        onPressed: () => abrirPagina(SinConexion(), context),
+                        onPressed: () =>
+                            abrirPagina(const SinConexion(), context),
                         icon: const Icon(
                           Icons.wifi_off_rounded,
                           color: Colors.redAccent,

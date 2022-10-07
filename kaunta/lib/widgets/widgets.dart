@@ -24,31 +24,102 @@ Widget cGroupListItem(Grupo g, int index) => Obx(
       () => Card(
         color: Temas().getSecondary(),
         elevation: 10.0,
-        shape: RoundedRectangleBorder(borderRadius: getBorderRadius(index)),
+        shape: RoundedRectangleBorder(
+            borderRadius: getBorderRadius(index, Listado().grupos)),
         child: Padding(
           padding: const EdgeInsets.all(25.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(g.nombre!.value),
-              Text(g.counters!.value.length.toString()),
+              Text(g.counters!.length.toString()),
             ],
           ),
         ),
       ),
     );
 
-BorderRadiusGeometry getBorderRadius(int pos) {
+Widget cCardItemContador(Contador c, int index) => Obx(
+      () => GestureDetector(
+        onTap: () => Listado().cActual = c,
+        child: Card(
+          color: Temas().getSecondary(),
+          shape: RoundedRectangleBorder(
+              borderRadius:
+                  getBorderRadius(index, Listado().gActual.counters!)),
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Image.network(
+                    c.image!.value,
+                  ),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          c.name!.value,
+                          style: TextStyle(color: Temas().getTextColor()),
+                        ),
+                        Text(
+                          c.count!.value.toString(),
+                          style: TextStyle(color: Temas().getTextColor()),
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.add_circle_outline_rounded,
+                                color: Colors.greenAccent,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.remove_circle_outline_rounded,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      color: Colors.deepOrangeAccent,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+BorderRadiusGeometry getBorderRadius(int pos, List<dynamic> lista) {
   BorderRadiusGeometry ret = BorderRadius.circular(25);
 
-  if (Listado().grupos.length != 1) {
+  if (lista.length != 1) {
     if (pos == 0) {
       ret = const BorderRadius.only(
           bottomLeft: Radius.circular(5),
           bottomRight: Radius.circular(5),
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25));
-    } else if (pos == Listado().grupos.length - 1) {
+    } else if (pos == lista.length - 1) {
       ret = const BorderRadius.only(
           bottomLeft: Radius.circular(25),
           bottomRight: Radius.circular(25),

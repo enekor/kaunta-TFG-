@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ConConexion extends StatelessWidget {
@@ -5,8 +6,12 @@ class ConConexion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("under development"),
+    return Center(
+      child: Column(
+        children: const [
+          Text("under development"),
+        ],
+      ),
     );
   }
 }
