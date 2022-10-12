@@ -2,26 +2,26 @@ import 'package:get/get.dart';
 
 class User {
   int? id;
-  RxString? name;
-  RxList<Grupo>? grupos;
+  RxString? name = "".obs;
+  RxList<Grupo>? grupos = <Grupo>[].obs;
 
   User({this.id, this.name, this.grupos});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'].obs;
-    if (json['grupos'] != null) {
-      grupos = <Grupo>[].obs;
-      json['gupos'].forEach((v) {
+    name!.value = json['name'];
+    if (json['grupos'] != null || (json['grupos'] as List).isNotEmpty) {
+      grupos!.value = <Grupo>[];
+      json['grupos'].forEach((v) {
         grupos!.add(Grupo.fromJson(v));
       });
     }
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson(User u) {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name!.value;
+    data['id'] = u.id;
+    data['name'] = u.name!.value;
     if (grupos != null) {
       data['grupos'] = grupos!.map((v) => v.toJson()).toList();
     }
@@ -31,18 +31,18 @@ class User {
 
 class Grupo {
   int? id;
-  RxString? nombre;
-  RxBool? activo;
-  RxList<Contador>? counters;
+  RxString? nombre = "".obs;
+  RxBool? activo = true.obs;
+  RxList<Contador>? counters = <Contador>[].obs;
 
   Grupo({this.id, this.nombre, this.activo, this.counters});
 
   Grupo.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    nombre = json['nombre'].obs;
-    activo = json['activo'].obs;
+    nombre!.value = json['nombre'];
+    activo!.value = json['activo'];
     if (json['counters'] != null) {
-      counters = <Contador>[].obs;
+      counters!.value = <Contador>[];
       json['counters'].forEach((v) {
         counters!.add(Contador.fromJson(v));
       });
@@ -63,11 +63,11 @@ class Grupo {
 
 class Contador {
   int? id;
-  RxString? name;
-  RxString? descrition;
-  RxString? image;
-  RxInt? count;
-  RxBool? active;
+  RxString? name = "".obs;
+  RxString? descrition = "".obs;
+  RxString? image = "".obs;
+  RxInt? count = 0.obs;
+  RxBool? active = true.obs;
 
   Contador(
       {this.id,
@@ -79,11 +79,11 @@ class Contador {
 
   Contador.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'].obs;
-    descrition = json['descrition'].obs;
-    image = json['image'].obs;
-    count = json['count'].obs;
-    active = json['active'].obs;
+    name!.value = json['name'];
+    descrition!.value = json['descrition'];
+    image!.value = json['image'];
+    count!.value = json['count'];
+    active!.value = json['active'];
   }
 
   Map<String, dynamic> toJson() {

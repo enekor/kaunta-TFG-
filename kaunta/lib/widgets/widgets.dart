@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/model/modelo.dart';
+import 'package:kaunta/paginas/contadores/ver_contador.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
 
-Widget cTextField(dynamic onChange, String label, IconData icono) => TextField(
-    style: TextStyle(color: Temas().getTextColor()),
-    decoration: InputDecoration(
-      labelStyle: TextStyle(color: Temas().getTextColor()),
-      suffixIcon: Icon(icono, color: Colors.purple),
-      labelText: label,
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16.0),
-        borderSide: BorderSide(color: Temas().getSecondary()),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Temas().getSecondary()),
-      ),
-    ),
-    onChanged: onChange);
+Widget cTextField(dynamic onChange, String label, IconData icono, int tipo) =>
+    TextField(
+        style: TextStyle(color: Temas().getTextColor()),
+        decoration: InputDecoration(
+          labelStyle: TextStyle(color: Temas().getTextColor()),
+          suffixIcon: Icon(icono, color: cambiarColor(tipo)),
+          labelText: label,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16.0),
+            borderSide: BorderSide(color: cambiarColor(tipo)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: cambiarColor(tipo)),
+          ),
+        ),
+        onChanged: onChange);
 
 Widget cGroupListItem(Grupo g, int index) => Obx(
       () => Card(
         color: Temas().getSecondary(),
         elevation: 10.0,
         shape: RoundedRectangleBorder(
-            borderRadius: getBorderRadius(index, Listado().grupos)),
+            borderRadius: getBorderRadius(index, Listado().usuario.grupos!)),
         child: Padding(
           padding: const EdgeInsets.all(25.0),
           child: Row(
@@ -39,9 +41,17 @@ Widget cGroupListItem(Grupo g, int index) => Obx(
       ),
     );
 
-Widget cCardItemContador(Contador c, int index) => Obx(
+Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
       () => GestureDetector(
-        onTap: () => Listado().cActual = c,
+        onTap: () {
+          Listado().cActual = c;
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const VerContador(),
+            ),
+          );
+        },
         child: Card(
           color: Temas().getSecondary(),
           shape: RoundedRectangleBorder(
@@ -64,27 +74,36 @@ Widget cCardItemContador(Contador c, int index) => Obx(
                       children: [
                         Text(
                           c.name!.value,
-                          style: TextStyle(color: Temas().getTextColor()),
+                          style: TextStyle(
+                            color: Temas().getTextColor(),
+                            fontSize: 30,
+                          ),
                         ),
                         Text(
                           c.count!.value.toString(),
-                          style: TextStyle(color: Temas().getTextColor()),
+                          style: TextStyle(
+                            color: Temas().getTextColor(),
+                            fontSize: 25,
+                          ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () => c.count!.value += 1,
                               icon: const Icon(
                                 Icons.add_circle_outline_rounded,
                                 color: Colors.greenAccent,
                               ),
+                              iconSize: 50,
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () => c.count!.value -= 1,
                               icon: const Icon(
                                 Icons.remove_circle_outline_rounded,
                                 color: Colors.redAccent,
                               ),
+                              iconSize: 50,
                             ),
                           ],
                         ),
@@ -100,6 +119,7 @@ Widget cCardItemContador(Contador c, int index) => Obx(
                       Icons.delete_outline_rounded,
                       color: Colors.deepOrangeAccent,
                     ),
+                    iconSize: 40,
                   ),
                 ),
               ],

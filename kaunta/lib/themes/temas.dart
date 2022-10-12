@@ -5,6 +5,8 @@ class Temas {
   static final Temas _temasInstance = Temas._internal();
 
   RxInt actual = 1.obs;
+  RxBool cImagenValido = true.obs;
+  RxBool cContadorValido = true.obs;
 
   factory Temas() {
     return _temasInstance;
@@ -82,4 +84,22 @@ class TemaOscuro {
   }
 
   TemaOscuro._internal();
+}
+
+Color cambiarColor(int tipo) {
+  Color c;
+
+  if (tipo == 1) {
+    Temas().cContadorValido.value
+        ? c = Temas().getSecondary()
+        : c = Colors.redAccent;
+  } else if (tipo == -1) {
+    c = Temas().getSecondary();
+  } else {
+    Temas().cImagenValido.value
+        ? c = Temas().getSecondary()
+        : c = Colors.redAccent;
+  }
+
+  return c;
 }

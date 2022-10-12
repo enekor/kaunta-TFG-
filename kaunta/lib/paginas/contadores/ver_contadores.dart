@@ -10,8 +10,8 @@ Widget verContadores() => Obx(
         margin: const EdgeInsets.all(25),
         child: ListView.builder(
           itemCount: Listado().gActual.counters!.length,
-          itemBuilder: (context, index) =>
-              cCardItemContador(Listado().gActual.counters![index], index),
+          itemBuilder: (context, index) => cCardItemContador(
+              Listado().gActual.counters![index], index, context),
         ),
       ),
     );

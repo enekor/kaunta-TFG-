@@ -9,13 +9,13 @@ Widget verGrupos() => Obx(
         color: Temas().getBackground(),
         margin: const EdgeInsets.all(25),
         child: ListView.builder(
-          itemCount: Listado().grupos.value.length,
+          itemCount: Listado().usuario.grupos!.value.length,
           itemBuilder: (context, index) => GestureDetector(
             onTap: () {
-              Listado().gActual = Listado().grupos[index];
+              Listado().gActual = Listado().usuario.grupos![index];
               Listado().verGrupos.value = false;
             },
-            child: cGroupListItem(Listado().grupos[index], index),
+            child: cGroupListItem(Listado().usuario.grupos![index], index),
           ),
         ),
       ),

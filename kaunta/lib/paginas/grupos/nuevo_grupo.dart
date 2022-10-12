@@ -1,18 +1,29 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:kaunta/json.dart';
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/themes/temas.dart';
+import 'package:kaunta/widgets/snackers.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
-void guardarGrupo(String nombre) {
-  Grupo g =
-      Grupo(nombre: nombre.obs, activo: true.obs, counters: <Contador>[].obs);
+//"/data/user/0/com.example.kaunta/app_flutter/contadoresFlutter/counters.json"
+void guardarGrupo(String nombre, BuildContext context) {
+  Grupo g = Grupo(
+      id: Random().nextInt(200),
+      nombre: nombre.obs,
+      activo: true.obs,
+      counters: <Contador>[].obs);
 
-  Listado().grupos.add(g);
+  Listado().usuario.grupos!.value.add(g);
+
+  var snack = Snacker().succedSnacker();
+  showSnack(snack, context);
 }
 
-Widget nuevoGrupo() {
+Widget nuevoGrupo(BuildContext context) {
   RxString nombreNuevoGrupo = "".obs;
 
   return Obx(
@@ -40,16 +51,23 @@ Widget nuevoGrupo() {
                     (valor) => nombreNuevoGrupo.value = valor,
                     "Nombre del grupo",
                     Icons.abc,
+                    -1,
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.only(top: 25),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Temas().getSecondary(),
+                      backgroundColor: Temas().getSecondary(),
                     ),
                     onPressed: () {
-                      guardarGrupo(nombreNuevoGrupo.value);
+                      if (nombreNuevoGrupo.value != "") {
+                        guardarGrupo(nombreNuevoGrupo.value, context);
+                        saveCounters();
+                      } else {
+                        var snack = Snacker().failSnacker();
+                        showSnack(snack, context);
+                      }
                     },
                     child: const Text("Guardar"),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/json.dart';
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
@@ -31,37 +32,46 @@ Widget nuevoContador(BuildContext context) {
               const SizedBox(height: 15),
               Image.network(nuevoContador.image!.value),
               const SizedBox(height: 15),
-              cTextField(
-                (valor) => nuevoContador.name!.value = valor,
-                "Nombre del contador",
-                Icons.abc,
-              ),
+              cTextField((valor) => nuevoContador.name!.value = valor,
+                  "Nombre del contador", Icons.abc, -1),
               const SizedBox(height: 15),
               cTextField(
                 (valor) {
                   try {
-                    int.parse(valor);
-                    nuevoContador.count!.value = int.parse(valor);
+                    if (valor == "") {
+                      nuevoContador.count!.value = 0;
+                    } else {
+                      nuevoContador.count!.value = int.parse(valor);
+                    }
+                    Temas().cContadorValido.value = true;
                   } catch (e) {
-                    var snack = Snacker().failSnacker();
-                    showSnack(snack, context);
+                    Temas().cContadorValido.value = false;
                   }
                 },
                 "Contador incial",
                 Icons.numbers,
+                1,
               ),
               const SizedBox(height: 15),
-              cTextField((String valor) {
-                if (valor.endsWith(".png") ||
-                    valor.endsWith(".jpg") ||
-                    valor.endsWith(".jpeg")) {
-                  nuevoContador.image!.value = valor;
-                } else {
-                  var snack = Snacker().failSnacker();
-                  showSnack(snack, context);
-                }
-              }, "Imagen del contador ( .png | .jpg | .jpeg)",
-                  Icons.link_rounded),
+              cTextField(
+                (String valor) {
+                  if (valor.endsWith(".png") ||
+                      valor.endsWith(".jpg") ||
+                      valor.endsWith(".jpeg")) {
+                    nuevoContador.image!.value = valor;
+                    Temas().cImagenValido.value = true;
+                  } else if (valor == "") {
+                    nuevoContador.image!.value =
+                        "https://www.familiasnumerosascv.org/wp-content/uploads/2015/05/icono-camara.png";
+                    Temas().cImagenValido.value = true;
+                  } else {
+                    Temas().cImagenValido.value = false;
+                  }
+                },
+                "Imagen del contador ( .png | .jpg | .jpeg)",
+                Icons.link_rounded,
+                2,
+              ),
               const SizedBox(height: 15),
               OutlinedButton(
                 onPressed: () {
@@ -69,7 +79,8 @@ Widget nuevoContador(BuildContext context) {
 
                   if (nuevoContador.name!.value != "" &&
                       nuevoContador.name != null &&
-                      nuevoContador.count != null) {
+                      Temas().cContadorValido.value &&
+                      Temas().cImagenValido.value) {
                     guardable = true;
                   } else {
                     var snack = Snacker().failSnacker();
@@ -80,6 +91,7 @@ Widget nuevoContador(BuildContext context) {
                     guardarContador(nuevoContador);
                     var snack = Snacker().succedSnacker();
                     showSnack(snack, context);
+                    saveCounters();
                   }
                 },
                 child: const Text("Guardar"),

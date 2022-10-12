@@ -75,7 +75,7 @@ public class UserController {
             status = HttpStatus.ACCEPTED;
             
             User u = new User();
-            u.setName(userReg.getUser());
+            u.setUsername(userReg.getUser());
             u.setPassword(userReg.getPassword());
             u.setGrupos(new ArrayList<>());
             

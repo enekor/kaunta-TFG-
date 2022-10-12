@@ -27,7 +27,7 @@ public class User {
     private long id;
 
     @Column(unique = true)
-    private String name;
+    private String username;
 
     @JsonBackReference
     private String password;
