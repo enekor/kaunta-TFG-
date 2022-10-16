@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class Snacker {
   SnackBar confirmSnack(String nombre, BuildContext context, borrarItem,
-          Object g, bool isGrupo) =>
+          Object g, bool isGrupo, String accion) =>
       SnackBar(
         duration: const Duration(seconds: 10),
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Borrar elemento $nombre?'),
+            Text('$accion elemento $nombre?'),
             IconButton(
               onPressed: () {
                 borrarItem(g, isGrupo);

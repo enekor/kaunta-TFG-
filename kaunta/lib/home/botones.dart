@@ -10,6 +10,7 @@ class Botones extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Scaffold(
+        backgroundColor: Temas().getBackground(),
         floatingActionButton: FloatingActionButton(
           onPressed: () => cambiarTema(),
           child: Icon(Temas().actual.value == 0

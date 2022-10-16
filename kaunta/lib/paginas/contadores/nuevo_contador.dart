@@ -17,7 +17,6 @@ Widget nuevoContador(BuildContext context) {
 
   return Obx(
     () => Container(
-      color: Temas().getBackground(),
       margin: const EdgeInsets.all(25),
       child: Center(
         child: SingleChildScrollView(

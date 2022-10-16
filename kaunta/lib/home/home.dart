@@ -88,15 +88,21 @@ class Home extends StatelessWidget {
                       pagina.value = selected,
                   selectedIndex: pagina.value,
                 ),
-                body: Center(
-                  child: Listado().verGrupos.value == true
-                      ? paginas[pagina.value]
-                      : paginas[pagina.value + 3],
+                body: Container(
+                  color: Temas().getBackground(),
+                  child: Center(
+                    child: Listado().verGrupos.value == true
+                        ? paginas[pagina.value]
+                        : paginas[pagina.value + 3],
+                  ),
                 ),
               ),
             )
-          : const Center(
-              child: CircularProgressIndicator(),
+          : Container(
+              color: Temas().getBackground(),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
             )),
     );
   }

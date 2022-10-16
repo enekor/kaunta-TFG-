@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/model/modelo.dart';
-import 'package:kaunta/paginas/contadores/nuevo_contador.dart';
 import 'package:kaunta/paginas/contadores/ver_contador.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
@@ -35,9 +34,12 @@ Widget cGroupListItem(Grupo g, int index, BuildContext context) => Obx(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(g.nombre!.value),
-              Text(g.counters!.length.toString()),
-              Text(g.activo.toString()),
+              Text(
+                g.nombre!.value,
+                style: TextStyle(color: Temas().getTextColor()),
+              ),
+              Text(g.counters!.length.toString(),
+                  style: TextStyle(color: Temas().getTextColor())),
               IconButton(
                 icon: const Icon(Icons.delete),
                 color: Colors.redAccent,
@@ -48,6 +50,7 @@ Widget cGroupListItem(Grupo g, int index, BuildContext context) => Obx(
                     borrarGrupo,
                     g,
                     true,
+                    "Borrar",
                   );
 
                   showSnack(snack, context);
@@ -103,7 +106,6 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                             fontSize: 25,
                           ),
                         ),
-                        Text(c.active!.value.toString()),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -139,6 +141,7 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                         borrarGrupo,
                         c,
                         false,
+                        "Borrar",
                       );
 
                       showSnack(snack, context);
@@ -166,7 +169,8 @@ Widget cRestoreGroupCardItem(Grupo g, BuildContext context) => Obx(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(g.nombre!.value),
+              Text(g.nombre!.value,
+                  style: TextStyle(color: Temas().getTextColor())),
               IconButton(
                 onPressed: () {
                   var snack = Snacker().confirmSnack(
@@ -175,6 +179,7 @@ Widget cRestoreGroupCardItem(Grupo g, BuildContext context) => Obx(
                     restaurarGrupo,
                     g,
                     true,
+                    "Restaurar",
                   );
 
                   showSnack(snack, context);
@@ -197,7 +202,8 @@ Widget cRestoreConterCardItem(Contador c, BuildContext context) => Obx(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(c.name!.value),
+              Text(c.name!.value,
+                  style: TextStyle(color: Temas().getTextColor())),
               IconButton(
                 onPressed: () {
                   var snack = Snacker().confirmSnack(
@@ -206,6 +212,7 @@ Widget cRestoreConterCardItem(Contador c, BuildContext context) => Obx(
                     restaurarGrupo,
                     c,
                     false,
+                    "Restaurar",
                   );
                   showSnack(snack, context);
                 },

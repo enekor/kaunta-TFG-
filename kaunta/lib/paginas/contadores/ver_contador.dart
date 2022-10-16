@@ -16,6 +16,7 @@ class VerContador extends StatelessWidget {
 
     return Obx(
       () => Scaffold(
+        backgroundColor: Temas().getBackground(),
         appBar: AppBar(
           backgroundColor: Temas().getPrimary(),
           title: Row(
@@ -212,19 +213,20 @@ Widget cambiarContador(bool cambiar, dynamic onChange) {
               SizedBox(
                 width: 100,
                 child: TextField(
+                  style: TextStyle(color: Temas().getTextColor()),
                   onChanged: onChange,
                   decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 3,
-                          color: Temas().getSecondary(),
+                          color: Temas().getPrimary(),
                         ),
                         borderRadius: BorderRadius.circular(25),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide(
-                          color: Temas().getSecondary(),
+                          color: Temas().getPrimary(),
                         ),
                       )),
                 ),

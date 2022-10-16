@@ -29,7 +29,6 @@ Widget nuevoGrupo(BuildContext context) {
   return Obx(
     () => SingleChildScrollView(
       child: Container(
-        color: Temas().getBackground(),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(80.0),
@@ -42,7 +41,7 @@ Widget nuevoGrupo(BuildContext context) {
                   child: Icon(
                     Icons.add_circle_rounded,
                     size: 200,
-                    color: Temas().getSecondary(),
+                    color: Temas().getPrimary(),
                   ),
                 ),
                 Container(

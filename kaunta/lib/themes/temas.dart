@@ -73,11 +73,11 @@ class TemaClaro {
 class TemaOscuro {
   static final TemaOscuro _temaOscuroInstance = TemaOscuro._internal();
 
-  MaterialColor primario = Colors.lightBlue;
-  Color secundario = const Color.fromARGB(255, 232, 129, 238);
-  Color fondo = const Color.fromARGB(255, 0, 0, 24);
+  MaterialColor primario = Colors.blueGrey;
+  Color secundario = const Color.fromARGB(27, 38, 42, 238);
+  Color fondo = const Color.fromARGB(12, 17, 19, 255);
   Color texto = Colors.white60;
-  Color buttonTextColor = Colors.black;
+  Color buttonTextColor = Colors.blueGrey.shade300;
 
   factory TemaOscuro() {
     return _temaOscuroInstance;

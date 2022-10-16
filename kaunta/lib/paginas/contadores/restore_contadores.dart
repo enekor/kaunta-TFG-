@@ -6,7 +6,6 @@ import 'package:kaunta/widgets/widgets.dart';
 
 Widget restoreContadores(BuildContext context) => Obx(
       () => Container(
-        color: Temas().getBackground(),
         margin: const EdgeInsets.all(25),
         child: ListView.builder(
           itemCount: Listado().gActual.counters!.length,
