@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/json.dart';
 import 'package:kaunta/model/modelo.dart';
+import 'package:kaunta/paginas/contadores/nuevo_contador.dart';
 import 'package:kaunta/paginas/contadores/ver_contador.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
+import 'package:kaunta/widgets/snackers.dart';
 
 Widget cTextField(dynamic onChange, String label, IconData icono, int tipo) =>
     TextField(
@@ -22,12 +25,11 @@ Widget cTextField(dynamic onChange, String label, IconData icono, int tipo) =>
         ),
         onChanged: onChange);
 
-Widget cGroupListItem(Grupo g, int index) => Obx(
+Widget cGroupListItem(Grupo g, int index, BuildContext context) => Obx(
       () => Card(
         color: Temas().getSecondary(),
         elevation: 10.0,
-        shape: RoundedRectangleBorder(
-            borderRadius: getBorderRadius(index, Listado().usuario.grupos!)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Padding(
           padding: const EdgeInsets.all(25.0),
           child: Row(
@@ -35,6 +37,22 @@ Widget cGroupListItem(Grupo g, int index) => Obx(
             children: [
               Text(g.nombre!.value),
               Text(g.counters!.length.toString()),
+              Text(g.activo.toString()),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                color: Colors.redAccent,
+                onPressed: () {
+                  var snack = Snacker().confirmSnack(
+                    g.nombre!.value,
+                    context,
+                    borrarGrupo,
+                    g,
+                    true,
+                  );
+
+                  showSnack(snack, context);
+                },
+              )
             ],
           ),
         ),
@@ -54,9 +72,8 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
         },
         child: Card(
           color: Temas().getSecondary(),
-          shape: RoundedRectangleBorder(
-              borderRadius:
-                  getBorderRadius(index, Listado().gActual.counters!)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
@@ -86,6 +103,7 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                             fontSize: 25,
                           ),
                         ),
+                        Text(c.active!.value.toString()),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -114,7 +132,17 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                 Expanded(
                   flex: 2,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      var snack = Snacker().confirmSnack(
+                        c.name!.value,
+                        context,
+                        borrarGrupo,
+                        c,
+                        false,
+                      );
+
+                      showSnack(snack, context);
+                    },
                     icon: const Icon(
                       Icons.delete_outline_rounded,
                       color: Colors.deepOrangeAccent,
@@ -129,26 +157,85 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
       ),
     );
 
-BorderRadiusGeometry getBorderRadius(int pos, List<dynamic> lista) {
-  BorderRadiusGeometry ret = BorderRadius.circular(25);
+Widget cRestoreGroupCardItem(Grupo g, BuildContext context) => Obx(
+      () => Card(
+        color: Temas().getSecondary(),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(g.nombre!.value),
+              IconButton(
+                onPressed: () {
+                  var snack = Snacker().confirmSnack(
+                    g.nombre!.value,
+                    context,
+                    restaurarGrupo,
+                    g,
+                    true,
+                  );
 
-  if (lista.length != 1) {
-    if (pos == 0) {
-      ret = const BorderRadius.only(
-          bottomLeft: Radius.circular(5),
-          bottomRight: Radius.circular(5),
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25));
-    } else if (pos == lista.length - 1) {
-      ret = const BorderRadius.only(
-          bottomLeft: Radius.circular(25),
-          bottomRight: Radius.circular(25),
-          topLeft: Radius.circular(5),
-          topRight: Radius.circular(5));
-    } else {
-      ret = BorderRadius.circular(5);
-    }
+                  showSnack(snack, context);
+                },
+                icon: const Icon(Icons.restore_from_trash_rounded),
+                color: Colors.greenAccent,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+
+Widget cRestoreConterCardItem(Contador c, BuildContext context) => Obx(
+      () => Card(
+        color: Temas().getSecondary(),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(c.name!.value),
+              IconButton(
+                onPressed: () {
+                  var snack = Snacker().confirmSnack(
+                    c.name!.value,
+                    context,
+                    restaurarGrupo,
+                    c,
+                    false,
+                  );
+                  showSnack(snack, context);
+                },
+                icon: const Icon(Icons.restore_from_trash_rounded),
+                color: Colors.greenAccent,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+void borrarGrupo(Object g, bool isGrupo) {
+  if (isGrupo) {
+    (g as Grupo).activo!.value = false;
+  } else {
+    (g as Contador).active!.value = false;
   }
 
-  return ret;
+  saveCounters();
+  loadCounters();
+}
+
+void restaurarGrupo(Object g, bool isGrupo) {
+  if (isGrupo) {
+    (g as Grupo).activo!.value = true;
+  } else {
+    (g as Contador).active!.value = true;
+  }
+
+  saveCounters();
+  loadCounters();
 }

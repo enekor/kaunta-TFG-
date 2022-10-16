@@ -1,20 +1,19 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
-Widget verContadores() => Obx(
+Widget restoreGrupos(BuildContext context) => Obx(
       () => Container(
         color: Temas().getBackground(),
         margin: const EdgeInsets.all(25),
         child: ListView.builder(
-          itemCount: Listado().gActual.counters!.length,
+          itemCount: Listado().usuario.grupos!.length,
           itemBuilder: (context, index) => Obx(
-            () => Listado().gActual.counters![index].active!.value
-                ? cCardItemContador(
-                    Listado().gActual.counters![index],
-                    index,
+            () => Listado().usuario.grupos![index].activo!.value == false
+                ? cRestoreGroupCardItem(
+                    Listado().usuario.grupos![index],
                     context,
                   )
                 : const SizedBox(height: 1),

@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/paginas/contadores/nuevo_contador.dart';
+import 'package:kaunta/paginas/contadores/restore_contadores.dart';
 import 'package:kaunta/paginas/contadores/ver_contadores.dart';
 import 'package:kaunta/paginas/grupos/nuevo_grupo.dart';
+import 'package:kaunta/paginas/grupos/restore_grupos.dart';
 import 'package:kaunta/paginas/grupos/ver_grupo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
 
-class SinConexion extends StatelessWidget {
-  const SinConexion({super.key});
+class Home extends StatelessWidget {
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +19,10 @@ class SinConexion extends StatelessWidget {
     var paginas = [
       verGrupos(),
       nuevoGrupo(context),
+      restoreGrupos(context),
       verContadores(),
-      nuevoContador(context)
+      nuevoContador(context),
+      restoreContadores(context)
     ];
 
     return FutureBuilder(
@@ -69,11 +73,15 @@ class SinConexion extends StatelessWidget {
                   destinations: const [
                     NavigationDestination(
                       icon: Icon(Icons.home, color: Colors.blueGrey),
-                      label: 'Contadores',
+                      label: 'Home',
                     ),
                     NavigationDestination(
                       icon: Icon(Icons.add, color: Colors.blueGrey),
-                      label: 'Nuevo contador',
+                      label: 'Nuevo',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.restore_rounded, color: Colors.blueGrey),
+                      label: "Restore",
                     ),
                   ],
                   onDestinationSelected: (int selected) =>
@@ -83,7 +91,7 @@ class SinConexion extends StatelessWidget {
                 body: Center(
                   child: Listado().verGrupos.value == true
                       ? paginas[pagina.value]
-                      : paginas[pagina.value + 2],
+                      : paginas[pagina.value + 3],
                 ),
               ),
             )

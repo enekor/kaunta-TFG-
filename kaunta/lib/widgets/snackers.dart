@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:kaunta/model/modelo.dart';
 
 class Snacker {
-  SnackBar confirmSnack(Contador c, BuildContext context, borrarItem) =>
+  SnackBar confirmSnack(String nombre, BuildContext context, borrarItem,
+          Object g, bool isGrupo) =>
       SnackBar(
         duration: const Duration(seconds: 10),
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('Borrar elemento ${c.name!.value}?'),
+            Text('Borrar elemento $nombre?'),
             IconButton(
               onPressed: () {
-                borrarItem(c);
+                borrarItem(g, isGrupo);
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
               },
               icon: const Icon(

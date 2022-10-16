@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kaunta/home/con_conexion.dart';
-import 'package:kaunta/home/sin_conexion.dart';
+import 'package:kaunta/home/home.dart';
 import 'package:kaunta/themes/temas.dart';
 
 class Botones extends StatelessWidget {
@@ -28,8 +27,7 @@ class Botones extends StatelessWidget {
                   child: Column(
                     children: [
                       IconButton(
-                        onPressed: () =>
-                            abrirPagina(const SinConexion(), context),
+                        onPressed: () => abrirPagina(const Home(), context),
                         icon: const Icon(
                           Icons.wifi_off_rounded,
                           color: Colors.redAccent,
@@ -45,7 +43,7 @@ class Botones extends StatelessWidget {
                 Column(
                   children: [
                     IconButton(
-                      onPressed: () => abrirPagina(ConConexion(), context),
+                      onPressed: () => abrirPagina(const Home(), context),
                       icon: const Icon(
                         Icons.wifi_rounded,
                         color: Colors.greenAccent,
