@@ -75,7 +75,7 @@ class TemaOscuro {
 
   MaterialColor primario = Colors.blueGrey;
   Color secundario = const Color.fromARGB(27, 38, 42, 238);
-  Color fondo = const Color.fromARGB(12, 17, 19, 255);
+  Color fondo = const Color.fromARGB(255, 0, 1, 24);
   Color texto = Colors.white60;
   Color buttonTextColor = Colors.blueGrey.shade300;
 
