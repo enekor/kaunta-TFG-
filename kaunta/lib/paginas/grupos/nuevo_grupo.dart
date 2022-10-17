@@ -50,7 +50,7 @@ Widget nuevoGrupo(BuildContext context) {
                     (valor) => nombreNuevoGrupo.value = valor,
                     "Nombre del grupo",
                     Icons.abc,
-                    -1,
+                    true.obs,
                   ),
                 ),
                 Container(

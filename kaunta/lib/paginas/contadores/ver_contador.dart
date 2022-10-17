@@ -79,7 +79,7 @@ class VerContador extends StatelessWidget {
                                     Listado().cActual.name!.value = valor,
                                 "Nombre del contador",
                                 Icons.abc_rounded,
-                                -1,
+                                true.obs,
                               ),
                               OutlinedButton(
                                 onPressed: () => cambiarNombre.value = false,

@@ -86,19 +86,13 @@ class TemaOscuro {
   TemaOscuro._internal();
 }
 
-Color cambiarColor(int tipo) {
+Color cambiarColor(bool valido) {
   Color c;
 
-  if (tipo == 1) {
-    Temas().cContadorValido.value
-        ? c = Temas().getSecondary()
-        : c = Colors.redAccent;
-  } else if (tipo == -1) {
-    c = Temas().getSecondary();
+  if (valido == true) {
+    c = Temas().getPrimary();
   } else {
-    Temas().cImagenValido.value
-        ? c = Temas().getSecondary()
-        : c = Colors.redAccent;
+    c = Colors.redAccent;
   }
 
   return c;

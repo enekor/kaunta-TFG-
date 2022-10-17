@@ -32,7 +32,7 @@ Widget nuevoContador(BuildContext context) {
               Image.network(nuevoContador.image!.value),
               const SizedBox(height: 15),
               cTextField((valor) => nuevoContador.name!.value = valor,
-                  "Nombre del contador", Icons.abc, -1),
+                  "Nombre del contador", Icons.abc, true.obs),
               const SizedBox(height: 15),
               cTextField(
                 (valor) {
@@ -49,7 +49,7 @@ Widget nuevoContador(BuildContext context) {
                 },
                 "Contador incial",
                 Icons.numbers,
-                1,
+                Temas().cContadorValido,
               ),
               const SizedBox(height: 15),
               cTextField(
@@ -69,7 +69,7 @@ Widget nuevoContador(BuildContext context) {
                 },
                 "Imagen del contador ( .png | .jpg | .jpeg)",
                 Icons.link_rounded,
-                2,
+                Temas().cImagenValido,
               ),
               const SizedBox(height: 15),
               OutlinedButton(

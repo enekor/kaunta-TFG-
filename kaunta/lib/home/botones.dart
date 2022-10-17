@@ -81,33 +81,20 @@ class Botones extends StatelessWidget {
 }
 
 void openLoginMenu(BuildContext context) {
+  RxBool valido = true.obs;
   showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-    ),
-    backgroundColor: Temas().getBackground(),
-    builder: (BuildContext bc) => Padding(
-      padding: const EdgeInsets.all(25.0),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 100),
-            cTextField((a) {}, "Usuario", Icons.person, -1),
-            const SizedBox(height: 100),
-            cTextField((a) {}, "Contraseña", Icons.password_rounded, -1),
-            const SizedBox(height: 100),
-            ElevatedButton(
-                onPressed: () => onClick(context),
-                child: const Text("Guardar")),
-          ],
-        ),
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25), topRight: Radius.circular(25)),
       ),
-    ),
-  );
+      backgroundColor: Temas().getBackground(),
+      builder: (BuildContext bc) => login(
+            () {},
+            (a) {},
+            (a) {},
+            valido,
+          ));
 }
 
 void onClick(BuildContext context) {

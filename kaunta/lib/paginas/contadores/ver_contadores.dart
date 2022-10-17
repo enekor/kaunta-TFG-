@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
-import 'package:kaunta/themes/temas.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
 Widget verContadores() => Obx(

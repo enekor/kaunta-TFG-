@@ -7,19 +7,20 @@ import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
 import 'package:kaunta/widgets/snackers.dart';
 
-Widget cTextField(dynamic onChange, String label, IconData icono, int tipo) =>
+Widget cTextField(
+        dynamic onChange, String label, IconData icono, RxBool valido) =>
     TextField(
         style: TextStyle(color: Temas().getTextColor()),
         decoration: InputDecoration(
           labelStyle: TextStyle(color: Temas().getTextColor()),
-          suffixIcon: Icon(icono, color: cambiarColor(tipo)),
+          suffixIcon: Icon(icono, color: cambiarColor(valido.value)),
           labelText: label,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.0),
-            borderSide: BorderSide(color: cambiarColor(tipo)),
+            borderSide: BorderSide(color: cambiarColor(valido.value)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: cambiarColor(tipo)),
+            borderSide: BorderSide(color: cambiarColor(valido.value)),
           ),
         ),
         onChanged: onChange);
@@ -169,23 +170,31 @@ Widget cRestoreGroupCardItem(Grupo g, BuildContext context) => Obx(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(g.nombre!.value,
-                  style: TextStyle(color: Temas().getTextColor())),
-              IconButton(
-                onPressed: () {
-                  var snack = Snacker().confirmSnack(
-                    g.nombre!.value,
-                    context,
-                    restaurarGrupo,
-                    g,
-                    true,
-                    "Restaurar",
-                  );
+              Expanded(
+                flex: 8,
+                child: Center(
+                  child: Text(g.nombre!.value,
+                      style: TextStyle(color: Temas().getTextColor())),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: IconButton(
+                  onPressed: () {
+                    var snack = Snacker().confirmSnack(
+                      g.nombre!.value,
+                      context,
+                      restaurarGrupo,
+                      g,
+                      true,
+                      "Restaurar",
+                    );
 
-                  showSnack(snack, context);
-                },
-                icon: const Icon(Icons.restore_from_trash_rounded),
-                color: Colors.greenAccent,
+                    showSnack(snack, context);
+                  },
+                  icon: const Icon(Icons.restore_from_trash_rounded),
+                  color: Colors.greenAccent,
+                ),
               )
             ],
           ),
@@ -202,22 +211,30 @@ Widget cRestoreConterCardItem(Contador c, BuildContext context) => Obx(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(c.name!.value,
-                  style: TextStyle(color: Temas().getTextColor())),
-              IconButton(
-                onPressed: () {
-                  var snack = Snacker().confirmSnack(
-                    c.name!.value,
-                    context,
-                    restaurarGrupo,
-                    c,
-                    false,
-                    "Restaurar",
-                  );
-                  showSnack(snack, context);
-                },
-                icon: const Icon(Icons.restore_from_trash_rounded),
-                color: Colors.greenAccent,
+              Expanded(
+                flex: 8,
+                child: Center(
+                  child: Text(c.name!.value,
+                      style: TextStyle(color: Temas().getTextColor())),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: IconButton(
+                  onPressed: () {
+                    var snack = Snacker().confirmSnack(
+                      c.name!.value,
+                      context,
+                      restaurarGrupo,
+                      c,
+                      false,
+                      "Restaurar",
+                    );
+                    showSnack(snack, context);
+                  },
+                  icon: const Icon(Icons.restore_from_trash_rounded),
+                  color: Colors.greenAccent,
+                ),
               ),
             ],
           ),
@@ -246,3 +263,28 @@ void restaurarGrupo(Object g, bool isGrupo) {
   saveCounters();
   loadCounters();
 }
+
+Widget login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
+        RxBool valido) =>
+    Obx(
+      () => Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 25),
+              cTextField(onChangeUser, "Usuario", Icons.person_rounded, valido),
+              const SizedBox(height: 25),
+              cTextField(
+                  onChangeUser, "Contraseña", Icons.person_rounded, valido),
+              const SizedBox(
+                height: 25,
+              ),
+              ElevatedButton(onPressed: onTap, child: const Text("Guardar")),
+            ],
+          ),
+        ),
+      ),
+    );
