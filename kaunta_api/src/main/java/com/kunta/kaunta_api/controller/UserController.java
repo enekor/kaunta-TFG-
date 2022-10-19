@@ -29,7 +29,7 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public ResponseEntity<?> login (@RequestParam String username, @RequestParam String password){
+    public ResponseEntity<?> login (@RequestParam("username") String username, @RequestParam("password") String password){
         
         HttpStatus status = HttpStatus.ACCEPTED;
         String ans = "";
@@ -47,6 +47,8 @@ public class UserController {
                     if(now.isAfter(login.getExpireDate())){
                         status = HttpStatus.UNAUTHORIZED;
                         ans = "La sesion ha expirado";
+
+                        lRepo.deleteById(login.getId());
                     }else{
                         token = login.getToken();
 
@@ -109,7 +111,7 @@ public class UserController {
     }
 
     @GetMapping("/user/me")
-    public ResponseEntity<?> me(@RequestParam String token){
+    public ResponseEntity<?> me(@RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
         Object ans = "";
         LocalDateTime now = LocalDateTime.now();
@@ -121,6 +123,8 @@ public class UserController {
             if(now.isAfter(login.getExpireDate())){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
+
+                lRepo.deleteById(login.getId());
             }else{
                 status = HttpStatus.OK;
                 ans =repo.findById(login.getIdUsuario());
