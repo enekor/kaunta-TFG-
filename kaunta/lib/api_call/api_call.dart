@@ -12,7 +12,7 @@ class ApiCall {
   ApiCall._internal();
 
   Future<int> testConnection() async {
-    Uri url = Uri.parse("https://restcountries.com/v3.1/al");
+    Uri url = Uri.parse("https://restcountries.com/v3.1/all");
 
     var ans = await http.get(url);
 

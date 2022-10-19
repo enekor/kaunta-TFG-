@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.kunta.kaunta_api.dto.GrupoCreateDTO;
+import com.kunta.kaunta_api.mapper.GrupoMapper;
 import com.kunta.kaunta_api.model.Grupo;
 import com.kunta.kaunta_api.model.User;
 import com.kunta.kaunta_api.reporitory.GrupoRepository;
@@ -22,23 +23,8 @@ public class GrupoController {
     
     private final UserRepository uRepo;
     private final GrupoRepository repo;
-    private LoginRepository lRepo;
+    private final LoginRepository lRepo;
 
-    @GetMapping("/group/all/{idUser}")
-    public ResponseEntity<?> getAllByUSerId(@PathVariable(name = "idUser")long id){
-        HttpStatus status = HttpStatus.ACCEPTED;
-        Object ans = null;
-
-        if(uRepo.existsById(id)){
-            User u = uRepo.findById(id).get();
-            ans = u.getGrupos();
-            status = HttpStatus.OK;
-        }else{
-            ans = "No existe usuario con esa id";
-            status = HttpStatus.BAD_REQUEST;
-        }
-        return ResponseEntity.status(status).body(ans);
-    }
 
     @PostMapping("/group/save")
     public ResponseEntity<?> saveGroup(@RequestBody GrupoCreateDTO grupo, @RequestParam("token") String token){
@@ -55,9 +41,8 @@ public class GrupoController {
                 lRepo.deleteById(login.getId());
             } else {
                 if (grupo.getId() == -1) {
-                    Grupo add = new Grupo();
-                    add.setNombre(grupo.getNombre());
-                    add.setActivo(true);
+                    Grupo add = GrupoMapper.getInstance().grupoFromDTO(grupo);
+                    
                     if (uRepo.existsById(grupo.getUser())) {
                         add.setUser(uRepo.findById(grupo.getUser()).get());
 

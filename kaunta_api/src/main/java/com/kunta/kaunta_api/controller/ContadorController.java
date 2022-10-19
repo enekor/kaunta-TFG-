@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import com.kunta.kaunta_api.dto.ContadorCreateDTO;
 import com.kunta.kaunta_api.dto.EditContadorDTO;
+import com.kunta.kaunta_api.mapper.ContadorMapper;
 import com.kunta.kaunta_api.model.Contador;
 import com.kunta.kaunta_api.model.Grupo;
 import com.kunta.kaunta_api.reporitory.ContadorRepository;
@@ -68,17 +69,14 @@ public class ContadorController {
             }else{
                 String urlImage = null;
 
-                if(!file.isEmpty()){
+                if(!file.isEmpty() || file != null){
                     String imagen = storageService.store(file);
                     urlImage = MvcUriComponentsBuilder.fromMethodName(FicherosController.class,"serveFile",imagen,null).build().toUriString();
                 }
 
-                Contador c = new Contador();
-                c.setActive(true);
-                c.setCount(contador.getCount());
-                c.setDescrition(contador.getDescription());
+                Contador c = ContadorMapper.getInstance().contadorFromDTO(contador);
                 c.setImage(urlImage);
-                c.setName(contador.getName());
+                
                 if(gRepo.existsById(contador.getGroup())){
                     Grupo g = gRepo.findById(contador.getGroup()).get();
                     c.setGroup(g);

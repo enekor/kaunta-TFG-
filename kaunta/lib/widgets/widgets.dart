@@ -10,20 +10,43 @@ import 'package:kaunta/widgets/snackers.dart';
 Widget cTextField(
         dynamic onChange, String label, IconData icono, RxBool valido) =>
     TextField(
-        style: TextStyle(color: Temas().getTextColor()),
-        decoration: InputDecoration(
-          labelStyle: TextStyle(color: Temas().getTextColor()),
-          suffixIcon: Icon(icono, color: cambiarColor(valido.value)),
-          labelText: label,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16.0),
-            borderSide: BorderSide(color: cambiarColor(valido.value)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: cambiarColor(valido.value)),
-          ),
+      style: TextStyle(color: Temas().getTextColor()),
+      decoration: InputDecoration(
+        labelStyle: TextStyle(color: Temas().getTextColor()),
+        suffixIcon: Icon(icono, color: cambiarColor(valido.value)),
+        labelText: label,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: BorderSide(color: cambiarColor(valido.value)),
         ),
-        onChanged: onChange);
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: cambiarColor(valido.value)),
+        ),
+      ),
+      onChanged: onChange,
+    );
+
+Widget cPasswordField(
+        dynamic onChange, String label, IconData icono, bool valido) =>
+    TextField(
+      obscureText: true,
+      autocorrect: false,
+      enableSuggestions: false,
+      style: TextStyle(color: Temas().getTextColor()),
+      decoration: InputDecoration(
+        labelStyle: TextStyle(color: Temas().getTextColor()),
+        suffixIcon: Icon(icono, color: cambiarColor(valido)),
+        labelText: label,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16.0),
+          borderSide: BorderSide(color: cambiarColor(valido)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: cambiarColor(valido)),
+        ),
+      ),
+      onChanged: onChange,
+    );
 
 Widget cGroupListItem(Grupo g, int index, BuildContext context) => Obx(
       () => Card(
@@ -265,26 +288,91 @@ void restaurarGrupo(Object g, bool isGrupo) {
 }
 
 Widget login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
-        RxBool valido) =>
+        RxBool valido, dynamic onRegisterTap) =>
     Obx(
       () => Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(60.0),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 25),
+              Text(
+                "Login",
+                style: TextStyle(color: Temas().getPrimary(), fontSize: 35),
+              ),
+              const SizedBox(height: 30),
               cTextField(onChangeUser, "Usuario", Icons.person_rounded, valido),
-              const SizedBox(height: 25),
-              cTextField(
-                  onChangeUser, "Contraseña", Icons.person_rounded, valido),
+              const SizedBox(height: 30),
+              cPasswordField(onChangePass, "Contraseña", Icons.password_rounded,
+                  valido.value),
               const SizedBox(
-                height: 25,
+                height: 80,
               ),
               ElevatedButton(onPressed: onTap, child: const Text("Guardar")),
+              TextButton(
+                  onPressed: onRegisterTap, child: const Text("Registrarse")),
             ],
           ),
         ),
+      ),
+    );
+
+Widget register(
+        dynamic onTap,
+        dynamic onTapLogin,
+        dynamic onChangeUser,
+        dynamic onChangePass1,
+        dynamic onChangePass2,
+        bool passValido,
+        bool nombreValido,
+        String mensaje) =>
+    Padding(
+      padding: const EdgeInsets.all(60),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            mensaje,
+            style: TextStyle(
+              color: Temas().getPrimary(),
+              fontSize: 35,
+            ),
+          ),
+          const SizedBox(height: 30),
+          cTextField(
+            onChangeUser,
+            "Nombre de usuario",
+            Icons.person,
+            true.obs,
+          ),
+          const SizedBox(height: 30),
+          cPasswordField(
+            onChangePass1,
+            "Contraseña",
+            Icons.password_rounded,
+            passValido,
+          ),
+          const SizedBox(height: 30),
+          cPasswordField(
+            onChangePass2,
+            "Repita la contraseña",
+            Icons.password_rounded,
+            passValido,
+          ),
+          const SizedBox(height: 50),
+          ElevatedButton(
+            onPressed: onTap,
+            child: Text(
+              "Registrarse",
+              style: TextStyle(color: Temas().getButtonTextColor()),
+            ),
+          ),
+          TextButton(
+            onPressed: onTapLogin,
+            child: const Text("Login"),
+          ),
+        ],
       ),
     );

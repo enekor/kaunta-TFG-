@@ -82,7 +82,16 @@ class Botones extends StatelessWidget {
 }
 
 Future<void> openLoginMenu(BuildContext context) async {
+  RxBool isLogin = true.obs;
   RxBool valido = true.obs;
+  String usuario = "";
+  String pass = "";
+  String usuarioReg = "";
+  String pass1 = "";
+  String pass2 = "";
+  RxBool nombreValido = true.obs;
+  RxBool passValido = true.obs;
+  RxString mensaje = "Registrarse".obs;
 
   showModalBottomSheet(
     context: context,
@@ -95,43 +104,72 @@ Future<void> openLoginMenu(BuildContext context) async {
       future: ApiCall().testConnection(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return ApiCall().codigo == 200
-              ? login(
-                  () {},
-                  (a) {},
-                  (a) {},
-                  valido,
-                )
-              : Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(25.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.wifi_off_rounded,
-                          color: Temas().getTextColor(),
-                        ),
-                        Text(
-                          "No se ha podido conectar, prueba de nuevo mas tarde o conectate de forma offline",
-                          style: TextStyle(
+          return Obx(
+            () => ApiCall().codigo == 200
+                ? isLogin.value
+                    ? login(
+                        () {
+                          valido.value = !valido.value;
+                        },
+                        (a) {
+                          usuario = a;
+                        },
+                        (a) {
+                          pass = a;
+                        },
+                        valido,
+                        () => isLogin.value = false,
+                      )
+                    : register(() {
+                        if (pass1 == pass2) {
+                          passValido.value = true;
+                          mensaje.value = "Registrase";
+                        } else {
+                          passValido.value = false;
+                          mensaje.value = "Las contraseñas no coinciden";
+                        }
+                      },
+                        () => isLogin.value = true,
+                        (a) => usuarioReg = a,
+                        (a) => pass1 = a,
+                        (a) => pass2 = a,
+                        passValido.value,
+                        nombreValido.value,
+                        mensaje.value)
+                : Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(25.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.wifi_off_rounded,
                             color: Temas().getTextColor(),
+                            size: 45,
                           ),
-                        ),
-                        const SizedBox(height: 25),
-                        ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text(
-                            "Aceptar",
-                            style:
-                                TextStyle(color: Temas().getButtonTextColor()),
+                          const SizedBox(height: 25),
+                          Text(
+                            "No se ha podido conectar, prueba de nuevo mas tarde o conectate de forma offline",
+                            style: TextStyle(
+                              color: Temas().getTextColor(),
+                              fontSize: 25,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 25),
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text(
+                              "Aceptar",
+                              style: TextStyle(
+                                  color: Temas().getButtonTextColor()),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                );
+          );
         } else {
           return Obx(() => Center(
                 child: Container(
