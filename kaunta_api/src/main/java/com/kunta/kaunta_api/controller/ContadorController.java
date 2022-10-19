@@ -1,8 +1,11 @@
 package com.kunta.kaunta_api.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kunta.kaunta_api.model.Login;
+import com.kunta.kaunta_api.reporitory.LoginRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +29,14 @@ import com.kunta.kaunta_api.upload.StorageService;
 
 import lombok.RequiredArgsConstructor;
 
+import javax.security.auth.login.LoginContext;
+
 @RestController
 @RequiredArgsConstructor
 public class ContadorController {
     
     private final ContadorRepository repo;
+    private final LoginRepository lRepo;
     private final GrupoRepository gRepo;
     private final StorageService storageService;
 
@@ -53,34 +59,42 @@ public class ContadorController {
     }
 
     @PostMapping(value = "/counter/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createCounter(@RequestPart("counter") ContadorCreateDTO contador, @RequestPart("img")MultipartFile file){
+    public ResponseEntity<?> createCounter(@RequestPart("counter") ContadorCreateDTO contador, @RequestPart("img")MultipartFile file, @RequestPart("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
         String ans = "";
 
-        String urlImage = null;
+        if(lRepo.existsByToken(token)){
+            Login login = lRepo.findByToken(token);
 
-        if(!file.isEmpty()){
-            String imagen = storageService.store(file);
-            urlImage = MvcUriComponentsBuilder.fromMethodName(FicherosController.class,"serveFile",imagen,null).build().toUriString();
-        }
+            if(LocalDateTime.now().isAfter(login.getExpireDate())){
 
-        Contador c = new Contador();
-        c.setActive(true);
-        c.setCount(contador.getCount());
-        c.setDescrition(contador.getDescription());
-        c.setImage(urlImage);
-        c.setName(contador.getName());
-        if(gRepo.existsById(contador.getGroup())){
-            Grupo g = gRepo.findById(contador.getGroup()).get();
-            c.setGroup(g);
+            }else{
+                String urlImage = null;
 
-            repo.save(c);
+                if(!file.isEmpty()){
+                    String imagen = storageService.store(file);
+                    urlImage = MvcUriComponentsBuilder.fromMethodName(FicherosController.class,"serveFile",imagen,null).build().toUriString();
+                }
 
-            status = HttpStatus.OK;
-            ans = "Contador creado con exito";
-        }else{
-            status = HttpStatus.NOT_FOUND;
-            ans = "No existe grupo con id "+contador.getGroup();
+                Contador c = new Contador();
+                c.setActive(true);
+                c.setCount(contador.getCount());
+                c.setDescrition(contador.getDescription());
+                c.setImage(urlImage);
+                c.setName(contador.getName());
+                if(gRepo.existsById(contador.getGroup())){
+                    Grupo g = gRepo.findById(contador.getGroup()).get();
+                    c.setGroup(g);
+
+                    repo.save(c);
+
+                    status = HttpStatus.OK;
+                    ans = "Contador creado con exito";
+                }else{
+                    status = HttpStatus.NOT_FOUND;
+                    ans = "No existe grupo con id "+contador.getGroup();
+                }
+            }
         }
 
         return ResponseEntity.status(status).body(ans);

@@ -34,8 +34,5 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Grupo> grupos;
-
-    @JsonBackReference
-    private String token;
     
 }
