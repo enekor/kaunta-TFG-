@@ -10,6 +10,6 @@ public class TestController {
 
     @GetMapping("test")
     public ResponseEntity<?> testConection(){
-        return  ResponseEntity.status(HttpStatus.OK).body("");
+        return  ResponseEntity.status(HttpStatus.OK).body("Estamos activos!!");
     }
 }

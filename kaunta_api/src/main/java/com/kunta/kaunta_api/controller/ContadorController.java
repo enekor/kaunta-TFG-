@@ -35,19 +35,31 @@ public class ContadorController {
     private final GrupoRepository gRepo;
     private final StorageService storageService;
 
-    @GetMapping("/counter/inactives/{group}")
-    public ResponseEntity<?> getAllActiveByGroupId(@PathVariable(name = "group")long id){
+    @GetMapping("/counter/all/{active}")
+    public ResponseEntity<?> getAllCountersFromGroupAndActive(@PathVariable(name = "active") boolean active,@RequestParam("token")String token, @RequestParam("group")long group){
         HttpStatus status = HttpStatus.ACCEPTED;
         Object ans = null;
 
-        if(gRepo.existsById(id)){
-            Grupo g = gRepo.findById(id).get();
-            List<Contador> lista = g.getCounters().stream().filter((c)->!c.isActive()).collect(Collectors.toList());
-            ans = lista;
-            status = HttpStatus.OK;
+        if(lRepo.existsByToken(token)){
+
+            Login login = lRepo.findByToken(token);
+            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+                ans = "La sesion ha caducado";
+                status = HttpStatus.UNAUTHORIZED;
+            }else{
+                if(gRepo.existsById(group)){
+                    Grupo g = gRepo.findById(group).get();
+                    
+                    status = HttpStatus.OK;
+                    ans = repo.findAllByGroupAndActive(g, active);
+                }else{
+                    status = HttpStatus.NOT_FOUND;
+                    ans = "No se ha encontrado grupo con id "+group;
+                }
+            }
         }else{
-            status = HttpStatus.NOT_FOUND;
-            ans = "No hay grupo con id "+id;
+            ans = "Error de sesion";
+            status = HttpStatus.UNAUTHORIZED;
         }
 
         return ResponseEntity.status(status).body(ans);
@@ -69,7 +81,7 @@ public class ContadorController {
             }else{
                 String urlImage = null;
 
-                if(!file.isEmpty() || file != null){
+                if(!file.isEmpty() && file != null){
                     String imagen = storageService.store(file);
                     urlImage = MvcUriComponentsBuilder.fromMethodName(FicherosController.class,"serveFile",imagen,null).build().toUriString();
                 }
@@ -95,7 +107,7 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
-    @PostMapping("/counter/edit")
+    @PutMapping("/counter/edit")
     public ResponseEntity<?> updateCounter(@RequestBody EditContadorDTO c, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
         String ans = "";

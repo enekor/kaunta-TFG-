@@ -288,7 +288,7 @@ void restaurarGrupo(Object g, bool isGrupo) {
 }
 
 Widget login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
-        RxBool valido, dynamic onRegisterTap) =>
+        RxBool valido, dynamic onRegisterTap, String texto) =>
     Obx(
       () => Padding(
         padding: const EdgeInsets.all(60.0),
@@ -298,7 +298,7 @@ Widget login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Login",
+                texto,
                 style: TextStyle(color: Temas().getPrimary(), fontSize: 35),
               ),
               const SizedBox(height: 30),
