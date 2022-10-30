@@ -8,7 +8,7 @@ import 'package:kaunta/utils/shared_preferences.dart';
 
 class ApiCall {
   int codigo = 0;
-  String apiUrl = "http://192.168.235.78:7777";
+  String apiUrl = "http://192.168.1.147:7777";
   bool tokenValido = false;
 
   static final ApiCall _apiInstace = ApiCall._internal();
@@ -23,12 +23,11 @@ class ApiCall {
 
     var ans = await http.get(url);
 
-    codigo = ans.statusCode;
-
-    return codigo;
+    return ans.statusCode;
   }
 
-  Future<void> login(String user, String password) async {
+  Future<bool> login(String user, String password) async {
+    bool ret;
     var url = Uri.parse("$apiUrl/login?username=$user&password=$password");
 
     var ans = await http.get(url);
@@ -38,10 +37,16 @@ class ApiCall {
     if (codigo == 200) {
       SharedPreferencesEditor()
           .postSharedPreferences("token", ans.body, "String");
+      ret = true;
+    } else {
+      ret = false;
     }
+
+    return ret;
   }
 
-  Future<void> register(String usuario, String password) async {
+  Future<bool> register(String usuario, String password) async {
+    bool ret;
     var url = Uri.parse("$apiUrl/register");
 
     Register reg = Register(user: usuario, password: password);
@@ -59,7 +64,12 @@ class ApiCall {
     if (codigo == 200) {
       SharedPreferencesEditor()
           .postSharedPreferences("token", ans.body, "String");
+      ret = true;
+    } else {
+      ret = false;
     }
+
+    return ret;
   }
 
   Future<bool> me() async {

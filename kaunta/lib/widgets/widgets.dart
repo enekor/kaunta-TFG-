@@ -325,7 +325,6 @@ Widget register(
         dynamic onChangePass1,
         dynamic onChangePass2,
         bool passValido,
-        bool nombreValido,
         String mensaje) =>
     Padding(
       padding: const EdgeInsets.all(60),
@@ -375,4 +374,16 @@ Widget register(
           ),
         ],
       ),
+    );
+
+Widget cargando(String texto) => Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const CircularProgressIndicator(),
+        Text(
+          texto,
+          style: const TextStyle(fontSize: 25),
+        ),
+      ],
     );
