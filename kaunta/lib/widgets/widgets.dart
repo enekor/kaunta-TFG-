@@ -287,7 +287,7 @@ void restaurarGrupo(Object g, bool isGrupo) {
   loadCounters();
 }
 
-Widget login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
+Widget Login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
         RxBool valido, dynamic onRegisterTap, String texto) =>
     Obx(
       () => Padding(
@@ -318,7 +318,7 @@ Widget login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
       ),
     );
 
-Widget register(
+Widget RegisterWidget(
         dynamic onTap,
         dynamic onTapLogin,
         dynamic onChangeUser,
@@ -374,16 +374,4 @@ Widget register(
           ),
         ],
       ),
-    );
-
-Widget cargando(String texto) => Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const CircularProgressIndicator(),
-        Text(
-          texto,
-          style: const TextStyle(fontSize: 25),
-        ),
-      ],
     );
