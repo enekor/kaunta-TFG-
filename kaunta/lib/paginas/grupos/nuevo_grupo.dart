@@ -2,25 +2,41 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:kaunta/json.dart';
+import 'package:kaunta/model/crear_grupo.dart';
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/themes/temas.dart';
+import 'package:kaunta/utils/api_call.dart';
 import 'package:kaunta/widgets/snackers.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
 //"/data/user/0/com.example.kaunta/app_flutter/contadoresFlutter/counters.json"
-void guardarGrupo(String nombre, BuildContext context) {
-  Grupo g = Grupo(
-      id: Random().nextInt(200),
-      nombre: nombre.obs,
-      activo: true.obs,
-      counters: <Contador>[].obs);
+void guardarGrupo(String nombre, BuildContext context) async {
+  if (ApiCall().conectado) {
+    CrearGrupo g =
+        CrearGrupo(id: -1, nombre: nombre, user: Listado().usuario.id);
 
-  Listado().usuario.grupos!.value.add(g);
+    int codigo = await ApiCall().createGroup(g);
 
-  var snack = Snacker().succedSnacker();
-  showSnack(snack, context);
+    var snack;
+    if (codigo == 200) {
+      snack = Snacker().succedSnacker();
+    } else {
+      snack = Snacker().failSnacker();
+    }
+    showSnack(snack, context);
+  } else {
+    Grupo g = Grupo(
+        id: Random().nextInt(200),
+        nombre: nombre.obs,
+        activo: true.obs,
+        counters: <Contador>[].obs);
+
+    Listado().usuario.grupos!.value.add(g);
+    var snack = Snacker().succedSnacker();
+    showSnack(snack, context);
+  }
 }
 
 Widget nuevoGrupo(BuildContext context) {

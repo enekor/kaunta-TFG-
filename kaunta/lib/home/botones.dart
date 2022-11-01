@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/home/home.dart';
-import 'package:kaunta/model/register.dart';
 import 'package:kaunta/themes/temas.dart';
 import 'package:kaunta/utils/api_call.dart';
 import 'package:kaunta/widgets/snackers.dart';
@@ -136,24 +135,28 @@ void loginRequest(BuildContext context) {
                         future: ApiCall().login(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            return (snapshot.data as int) == 200
-                                ? const Center(
-                                    child: Text("Logeado"),
-                                  )
-                                : Center(
-                                    child: Column(
-                                      children: [
-                                        const Text("No logeado"),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            loginPressed.value = true;
-                                          },
-                                          child: const Text("Ok"),
-                                        ),
-                                      ],
+                            if ((snapshot.data as int) == 200) {
+                              abrirPagina(const Home(), context);
+                              //Navigator.pop(context);
+                              return const Center(
+                                child: Text("Logeado"),
+                              );
+                            } else {
+                              return Center(
+                                child: Column(
+                                  children: [
+                                    const Text("No logeado"),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        loginPressed.value = true;
+                                      },
+                                      child: const Text("Ok"),
                                     ),
-                                  );
+                                  ],
+                                ),
+                              );
+                            }
                           } else {
                             return Center(
                               child: Column(
@@ -190,6 +193,8 @@ void loginRequest(BuildContext context) {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             if ((snapshot.data as int) == 202) {
+                              abrirPagina(const Home(), context);
+                              //Navigator.pop(context);
                               return const Center(
                                 child: Text("Registrado"),
                               );
@@ -199,11 +204,12 @@ void loginRequest(BuildContext context) {
                                   children: [
                                     const Text("No se pudo registrar"),
                                     ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          loginPressed.value = true;
-                                        },
-                                        child: const Text("ok"))
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        loginPressed.value = true;
+                                      },
+                                      child: const Text("ok"),
+                                    ),
                                   ],
                                 ),
                               );

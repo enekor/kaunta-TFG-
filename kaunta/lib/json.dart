@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
+import 'package:kaunta/utils/api_call.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<File> _localFile() async {
@@ -12,12 +13,19 @@ Future<File> _localFile() async {
 }
 
 loadCounters() async {
-  final file = await _localFile();
+  String json;
+  if (ApiCall().conectado == false) {
+    final file = await _localFile();
 
-  String json = file.readAsStringSync();
+    json = file.readAsStringSync();
+  } else {
+    json = await ApiCall().me();
+  }
+
   if (json != "") {
     Listado().usuario.grupos!.value = User.fromJson(jsonDecode(json)).grupos!;
   }
+
   Listado().leido.value = true;
 }
 

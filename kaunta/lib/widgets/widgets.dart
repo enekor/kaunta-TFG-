@@ -5,6 +5,7 @@ import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/contadores/ver_contador.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
+import 'package:kaunta/utils/api_call.dart';
 import 'package:kaunta/widgets/snackers.dart';
 
 Widget cTextField(
@@ -265,25 +266,35 @@ Widget cRestoreConterCardItem(Contador c, BuildContext context) => Obx(
       ),
     );
 
-void borrarGrupo(Object g, bool isGrupo) {
+void borrarGrupo(Object g, bool isGrupo) async {
   if (isGrupo) {
-    (g as Grupo).activo!.value = false;
+    if (ApiCall().conectado) {
+      Grupo grupo = g as Grupo;
+      int codigo = await ApiCall().deleteGroup(g.id!);
+    } else {
+      (g as Grupo).activo!.value = false;
+      saveCounters();
+    }
   } else {
     (g as Contador).active!.value = false;
   }
 
-  saveCounters();
   loadCounters();
 }
 
-void restaurarGrupo(Object g, bool isGrupo) {
+void restaurarGrupo(Object g, bool isGrupo) async {
   if (isGrupo) {
-    (g as Grupo).activo!.value = true;
+    if (ApiCall().conectado) {
+      Grupo grupo = g as Grupo;
+      int codigo = await ApiCall().restoreGroup(g.id!);
+    } else {
+      (g as Grupo).activo!.value = true;
+      saveCounters();
+    }
   } else {
     (g as Contador).active!.value = true;
   }
 
-  saveCounters();
   loadCounters();
 }
 
