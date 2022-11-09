@@ -13,11 +13,11 @@ class Listado {
 
   RxBool leido = false.obs;
 
-  User usuario = User(
+  Rx<User> usuario = User(
     id: Random().nextInt(200),
     grupos: <Grupo>[].obs,
     name: "Nombre".obs,
-  );
+  ).obs;
   Grupo gActual = Grupo(counters: <Contador>[].obs);
   Contador cActual = Contador();
 

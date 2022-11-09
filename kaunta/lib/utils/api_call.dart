@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:kaunta/model/crear_contador.dart';
 import 'package:kaunta/model/crear_grupo.dart';
 import 'package:kaunta/model/edit_contador.dart';
+import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/model/register.dart';
+import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/utils/shared_preferences.dart';
 
 class ApiCall {
@@ -38,7 +40,7 @@ class ApiCall {
     if (ans.statusCode == 200) {
       SharedPreferencesEditor()
           .postSharedPreferences("token", ans.body, "String");
-      conectado = true;
+      ApiCall().conectado = true;
     }
 
     return ans.statusCode;
@@ -46,20 +48,21 @@ class ApiCall {
 
   Future<int> register() async {
     Register reg = Register(user: usuarioReg, password: passReg);
+    String body = jsonEncode(reg);
 
     var ans = await http.post(
       Uri.parse("$apiUrl/register"),
-      body: jsonEncode(reg),
+      body: body,
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8'
       },
     );
 
-    if (ans.statusCode == 200) {
+    if (ans.statusCode == 202) {
       SharedPreferencesEditor()
           .postSharedPreferences("token", ans.body, "String");
 
-      conectado = true;
+      ApiCall().conectado = true;
     }
 
     return ans.statusCode;
@@ -71,7 +74,7 @@ class ApiCall {
         await SharedPreferencesEditor().getSharedPreferences("token", "String");
     var ans = await http.get(Uri.parse("$apiUrl/user/me?token=$token"));
 
-    if (ans.statusCode == 20) {
+    if (ans.statusCode == 200) {
       ret = ans.body;
     }
 
@@ -108,7 +111,7 @@ class ApiCall {
   }
 
   Future<int> deleteGroup(int id) async {
-    String token = SharedPreferencesEditor()
+    String token = await SharedPreferencesEditor()
         .getSharedPreferences("token", "String") as String;
 
     var ans =
@@ -118,7 +121,7 @@ class ApiCall {
   }
 
   Future<int> restoreGroup(int id) async {
-    String token = SharedPreferencesEditor()
+    String token = await SharedPreferencesEditor()
         .getSharedPreferences("token", "String") as String;
 
     var ans =
@@ -147,9 +150,59 @@ class ApiCall {
     String token =
         await SharedPreferencesEditor().getSharedPreferences("token", "String");
 
-    var ans = await http.post(
-      Uri.parse("$apiUrl/group/save?token=$token"),
-    );
+    var ans = await http.post(Uri.parse("$apiUrl/counter/add?token=$token"),
+        body: jsonEncode(contador),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        });
+
+    return ans.statusCode;
+  }
+
+  Future<int> getContadores(bool activo) async {
+    String token = await SharedPreferencesEditor()
+        .getSharedPreferences("token", "String") as String;
+    int grupo = Listado().gActual.id!;
+
+    var ans = await http.get(
+        Uri.parse("$apiUrl/counter/all/$activo?token=$token&group=$grupo"));
+
+    if (ans.statusCode == 200) {
+      List<Contador> contadores = contadoresFromJson(jsonDecode(ans.body));
+      Listado().gActual.counters!.value = contadores;
+    }
+
+    return ans.statusCode;
+  }
+
+  List<Contador> contadoresFromJson(Map<String, dynamic> json) {
+    List<Contador> ret = <Contador>[];
+
+    if (json.isNotEmpty && json["contadores"] != null) {
+      json["contadores"].forEach((v) {
+        ret.add(Contador.fromJson(v));
+      });
+    }
+
+    return ret;
+  }
+
+  Future<int> deleteContador(int id) async {
+    String token = await SharedPreferencesEditor()
+        .getSharedPreferences("token", "String") as String;
+
+    var ans =
+        await http.delete(Uri.parse("$apiUrl/counter/delete/$id?token=$token"));
+
+    return ans.statusCode;
+  }
+
+  Future<int> restoreContador(int id) async {
+    String token = await SharedPreferencesEditor()
+        .getSharedPreferences("token", "String") as String;
+
+    var ans =
+        await http.post(Uri.parse("$apiUrl/counter/restore/$id?token=$token"));
 
     return ans.statusCode;
   }

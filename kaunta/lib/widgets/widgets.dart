@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/json.dart';
+import 'package:kaunta/model/edit_contador.dart';
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/contadores/ver_contador.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
@@ -135,7 +136,20 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                              onPressed: () => c.count!.value += 1,
+                              onPressed: () async {
+                                if (ApiCall().conectado) {
+                                  EditContador contador = EditContador(
+                                    counter: 1,
+                                    descripcion: c.descrition!.value,
+                                    id: c.id,
+                                    name: c.name!.value,
+                                  );
+                                  int codigo =
+                                      await ApiCall().saveCounter(contador);
+                                } else {
+                                  c.count!.value += 1;
+                                }
+                              },
                               icon: const Icon(
                                 Icons.add_circle_outline_rounded,
                                 color: Colors.greenAccent,
@@ -143,7 +157,20 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                               iconSize: 50,
                             ),
                             IconButton(
-                              onPressed: () => c.count!.value -= 1,
+                              onPressed: () async {
+                                if (ApiCall().conectado) {
+                                  EditContador contador = EditContador(
+                                    counter: -1,
+                                    descripcion: c.descrition!.value,
+                                    id: c.id,
+                                    name: c.name!.value,
+                                  );
+                                  int codigo =
+                                      await ApiCall().saveCounter(contador);
+                                } else {
+                                  c.count!.value -= 1;
+                                }
+                              },
                               icon: const Icon(
                                 Icons.remove_circle_outline_rounded,
                                 color: Colors.redAccent,
@@ -270,13 +297,19 @@ void borrarGrupo(Object g, bool isGrupo) async {
   if (isGrupo) {
     if (ApiCall().conectado) {
       Grupo grupo = g as Grupo;
-      int codigo = await ApiCall().deleteGroup(g.id!);
+      int codigo = await ApiCall().deleteGroup(grupo.id!);
     } else {
       (g as Grupo).activo!.value = false;
       saveCounters();
     }
   } else {
-    (g as Contador).active!.value = false;
+    if (ApiCall().conectado) {
+      Contador c = g as Contador;
+      int codigo = await ApiCall().deleteContador(c.id!);
+    } else {
+      (g as Contador).active!.value = false;
+      saveCounters();
+    }
   }
 
   loadCounters();
@@ -286,13 +319,19 @@ void restaurarGrupo(Object g, bool isGrupo) async {
   if (isGrupo) {
     if (ApiCall().conectado) {
       Grupo grupo = g as Grupo;
-      int codigo = await ApiCall().restoreGroup(g.id!);
+      int codigo = await ApiCall().restoreGroup(grupo.id!);
     } else {
       (g as Grupo).activo!.value = true;
       saveCounters();
     }
   } else {
-    (g as Contador).active!.value = true;
+    if (ApiCall().conectado) {
+      Contador c = (g as Contador);
+      int codigo = await ApiCall().restoreContador(c.id!);
+    } else {
+      (g as Contador).active!.value = true;
+      saveCounters();
+    }
   }
 
   loadCounters();
@@ -302,27 +341,61 @@ Widget Login(dynamic onTap, dynamic onChangeUser, dynamic onChangePass,
         RxBool valido, dynamic onRegisterTap, String texto) =>
     Obx(
       () => Padding(
-        padding: const EdgeInsets.all(60.0),
+        padding: const EdgeInsets.all(50.0),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                texto,
-                style: TextStyle(color: Temas().getPrimary(), fontSize: 35),
+              Expanded(
+                flex: 1,
+                child: Text(
+                  texto,
+                  style: TextStyle(color: Temas().getPrimary(), fontSize: 35),
+                ),
               ),
-              const SizedBox(height: 30),
-              cTextField(onChangeUser, "Usuario", Icons.person_rounded, valido),
-              const SizedBox(height: 30),
-              cPasswordField(onChangePass, "Contraseña", Icons.password_rounded,
-                  valido.value),
-              const SizedBox(
-                height: 80,
+              Expanded(
+                flex: 6,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    cTextField(
+                        onChangeUser, "Usuario", Icons.person_rounded, valido),
+                    const SizedBox(height: 30),
+                    cPasswordField(onChangePass, "Contraseña",
+                        Icons.password_rounded, valido.value),
+                  ],
+                ),
               ),
-              ElevatedButton(onPressed: onTap, child: const Text("Guardar")),
-              TextButton(
-                  onPressed: onRegisterTap, child: const Text("Registrarse")),
+              Expanded(
+                flex: 3,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Temas().getPrimary(),
+                      ),
+                      onPressed: onTap,
+                      child: Text(
+                        "Guardar",
+                        style: TextStyle(
+                          color: Temas().getButtonTextColor(),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: onRegisterTap,
+                      child: Text(
+                        "Registrarse",
+                        style: TextStyle(
+                          color: Temas().getPrimary(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -338,50 +411,75 @@ Widget RegisterWidget(
         bool passValido,
         String mensaje) =>
     Padding(
-      padding: const EdgeInsets.all(60),
+      padding: const EdgeInsets.all(50),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            mensaje,
-            style: TextStyle(
-              color: Temas().getPrimary(),
-              fontSize: 35,
-            ),
-          ),
-          const SizedBox(height: 30),
-          cTextField(
-            onChangeUser,
-            "Nombre de usuario",
-            Icons.person,
-            true.obs,
-          ),
-          const SizedBox(height: 30),
-          cPasswordField(
-            onChangePass1,
-            "Contraseña",
-            Icons.password_rounded,
-            passValido,
-          ),
-          const SizedBox(height: 30),
-          cPasswordField(
-            onChangePass2,
-            "Repita la contraseña",
-            Icons.password_rounded,
-            passValido,
-          ),
-          const SizedBox(height: 50),
-          ElevatedButton(
-            onPressed: onTap,
+          Expanded(
+            flex: 1,
             child: Text(
-              "Registrarse",
-              style: TextStyle(color: Temas().getButtonTextColor()),
+              mensaje,
+              style: TextStyle(
+                color: Temas().getPrimary(),
+                fontSize: 35,
+              ),
             ),
           ),
-          TextButton(
-            onPressed: onTapLogin,
-            child: const Text("Login"),
+          Expanded(
+            flex: 6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                cTextField(
+                  onChangeUser,
+                  "Nombre de usuario",
+                  Icons.person,
+                  true.obs,
+                ),
+                cPasswordField(
+                  onChangePass1,
+                  "Contraseña",
+                  Icons.password_rounded,
+                  passValido,
+                ),
+                cPasswordField(
+                  onChangePass2,
+                  "Repita la contraseña",
+                  Icons.password_rounded,
+                  passValido,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Temas().getPrimary(),
+                  ),
+                  onPressed: onTap,
+                  child: Text(
+                    "Registrarse",
+                    style: TextStyle(
+                      color: Temas().getButtonTextColor(),
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: onTapLogin,
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      color: Temas().getPrimary(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

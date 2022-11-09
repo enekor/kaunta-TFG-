@@ -77,7 +77,7 @@ class TemaOscuro {
   Color secundario = const Color.fromARGB(27, 38, 42, 238);
   Color fondo = const Color.fromARGB(255, 0, 1, 24);
   Color texto = Colors.white60;
-  Color buttonTextColor = Colors.blueGrey.shade300;
+  Color buttonTextColor = const Color.fromARGB(255, 195, 215, 225);
 
   factory TemaOscuro() {
     return _temaOscuroInstance;

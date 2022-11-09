@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/model/edit_contador.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
+import 'package:kaunta/utils/api_call.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
 class VerContador extends StatelessWidget {
@@ -101,33 +103,76 @@ class VerContador extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        IconButton(
-                          onPressed: () =>
-                              Listado().cActual.count!.value += count.value,
-                          icon: const Icon(
-                            Icons.add_circle_outline_rounded,
-                            color: Colors.lightGreenAccent,
+                        Expanded(
+                          flex: 2,
+                          child: IconButton(
+                            onPressed: () async {
+                              if (ApiCall().conectado) {
+                                Listado().cActual.count!.value += count.value;
+                                EditContador contador = EditContador(
+                                  counter: count.value,
+                                  descripcion:
+                                      Listado().cActual.descrition!.value,
+                                  id: Listado().cActual.id,
+                                  name: Listado().cActual.name!.value,
+                                );
+                                int codigo =
+                                    await ApiCall().saveCounter(contador);
+                              } else {
+                                Listado().cActual.count!.value += count.value;
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.add_circle_outline_rounded,
+                              color: Colors.lightGreenAccent,
+                            ),
+                            iconSize: 80,
                           ),
-                          iconSize: 80,
                         ),
-                        GestureDetector(
-                          onTap: () => cambiarCount.value = !cambiarCount.value,
-                          child: Text(
-                            count.value.toString(),
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Temas().getTextColor(),
+                        Expanded(
+                          flex: 6,
+                          child: GestureDetector(
+                            onTap: () =>
+                                cambiarCount.value = !cambiarCount.value,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Center(
+                                child: Text(
+                                  count.value.toString(),
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    color: Temas().getTextColor(),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () =>
-                              Listado().cActual.count!.value -= count.value,
-                          icon: const Icon(
-                            Icons.remove_circle_outline_rounded,
-                            color: Colors.deepOrangeAccent,
+                        Expanded(
+                          flex: 2,
+                          child: IconButton(
+                            onPressed: () async {
+                              if (ApiCall().conectado) {
+                                Listado().cActual.count!.value -= count.value;
+                                EditContador contador = EditContador(
+                                  counter: -count.value,
+                                  descripcion:
+                                      Listado().cActual.descrition!.value,
+                                  id: Listado().cActual.id,
+                                  name: Listado().cActual.name!.value,
+                                );
+                                int codigo =
+                                    await ApiCall().saveCounter(contador);
+                              } else {
+                                Listado().cActual.count!.value -= count.value;
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.remove_circle_outline_rounded,
+                              color: Colors.deepOrangeAccent,
+                            ),
+                            iconSize: 80,
                           ),
-                          iconSize: 80,
                         ),
                       ],
                     ),

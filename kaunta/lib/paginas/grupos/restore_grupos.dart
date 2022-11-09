@@ -7,11 +7,11 @@ Widget restoreGrupos(BuildContext context) => Obx(
       () => Container(
         margin: const EdgeInsets.all(25),
         child: ListView.builder(
-          itemCount: Listado().usuario.grupos!.length,
+          itemCount: Listado().usuario.value.grupos!.length,
           itemBuilder: (context, index) => Obx(
-            () => Listado().usuario.grupos![index].activo!.value == false
+            () => Listado().usuario.value.grupos![index].activo!.value == false
                 ? cRestoreGroupCardItem(
-                    Listado().usuario.grupos![index],
+                    Listado().usuario.value.grupos![index],
                     context,
                   )
                 : const SizedBox(height: 1),

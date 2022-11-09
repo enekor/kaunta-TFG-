@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/json.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
-Widget verGrupos() => Obx(
-      () => Container(
-        margin: const EdgeInsets.all(25),
-        child: Container(
-          child: ListView.builder(
-            itemCount: Listado().usuario.grupos!.length,
-            itemBuilder: (context, index) => Obx(
-              () => Listado().usuario.grupos![index].activo!.value
+Widget verGrupos() => Container(
+      margin: const EdgeInsets.all(25),
+      child: Obx(() {
+        loadCounters();
+        return ListView.builder(
+          itemCount: Listado().usuario.value.grupos!.length,
+          itemBuilder: (context, index) =>
+              Listado().usuario.value.grupos![index].activo!.value
                   ? GestureDetector(
                       onTap: () {
-                        Listado().gActual = Listado().usuario.grupos![index];
+                        Listado().gActual =
+                            Listado().usuario.value.grupos![index];
                         Listado().verGrupos.value = false;
                       },
                       child: cGroupListItem(
-                        Listado().usuario.grupos![index],
+                        Listado().usuario.value.grupos![index],
                         index,
                         context,
                       ),
@@ -25,8 +27,6 @@ Widget verGrupos() => Obx(
                   : const SizedBox(
                       height: 1,
                     ),
-            ),
-          ),
-        ),
-      ),
+        );
+      }),
     );

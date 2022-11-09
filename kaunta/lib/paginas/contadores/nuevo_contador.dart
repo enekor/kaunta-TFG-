@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/json.dart';
+import 'package:kaunta/model/crear_contador.dart';
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
+import 'package:kaunta/utils/api_call.dart';
 import 'package:kaunta/widgets/snackers.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
@@ -73,7 +75,7 @@ Widget nuevoContador(BuildContext context) {
               ),
               const SizedBox(height: 15),
               OutlinedButton(
-                onPressed: () {
+                onPressed: () async {
                   bool guardable = false;
 
                   if (nuevoContador.name!.value != "" &&
@@ -87,10 +89,31 @@ Widget nuevoContador(BuildContext context) {
                   }
 
                   if (guardable) {
-                    guardarContador(nuevoContador);
-                    var snack = Snacker().succedSnacker();
-                    showSnack(snack, context);
-                    saveCounters();
+                    if (ApiCall().conectado) {
+                      CrearContador contador = CrearContador(
+                        name: nuevoContador.name!.value,
+                        count: nuevoContador.count!.value,
+                        description: "",
+                        group: Listado().gActual.id,
+                        image: nuevoContador.image!.value,
+                      );
+
+                      int subida = await ApiCall().createContador(contador);
+
+                      var snack;
+                      if (subida == 200) {
+                        snack = Snacker().succedSnacker();
+                      } else {
+                        snack = Snacker().failSnacker();
+                      }
+
+                      showSnack(snack, context);
+                    } else {
+                      guardarContador(nuevoContador);
+                      var snack = Snacker().succedSnacker();
+                      showSnack(snack, context);
+                      saveCounters();
+                    }
                   }
                 },
                 child: const Text("Guardar"),

@@ -9,7 +9,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name!.value = json['name'];
+    name!.value = json['username'];
     if (json['grupos'] != null || (json['grupos'] as List).isNotEmpty) {
       grupos!.value = <Grupo>[];
       json['grupos'].forEach((v) {
@@ -21,7 +21,7 @@ class User {
   Map<String, dynamic> toJson(User u) {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = u.id;
-    data['name'] = u.name!.value;
+    data['username'] = u.name!.value;
     if (grupos != null) {
       data['grupos'] = grupos!.map((v) => v.toJson()).toList();
     }

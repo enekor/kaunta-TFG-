@@ -12,6 +12,8 @@ public class ContadorCreateDTO {
 
     private String description;
 
+    private String image;
+
     private int count;
 
     private long group;

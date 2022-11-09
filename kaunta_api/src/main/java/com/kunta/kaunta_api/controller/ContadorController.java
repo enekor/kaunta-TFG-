@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kunta.kaunta_api.dto.CountersOutDto;
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.reporitory.LoginRepository;
 import org.springframework.http.HttpStatus;
@@ -49,9 +50,10 @@ public class ContadorController {
             }else{
                 if(gRepo.existsById(group)){
                     Grupo g = gRepo.findById(group).get();
+                    List<Contador> contadores = repo.findAllByGroupAndActive(g, active);
                     
                     status = HttpStatus.OK;
-                    ans = repo.findAllByGroupAndActive(g, active);
+                    ans = new CountersOutDto(contadores);
                 }else{
                     status = HttpStatus.NOT_FOUND;
                     ans = "No se ha encontrado grupo con id "+group;
@@ -65,8 +67,8 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
-    @PostMapping(value = "/counter/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createCounter(@RequestPart("counter") ContadorCreateDTO contador, @RequestPart("img")MultipartFile file, @RequestPart("token") String token){
+    @PostMapping("/counter/add")
+    public ResponseEntity<?> createCounter(@RequestBody ContadorCreateDTO contador, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
         String ans = "";
 
@@ -79,15 +81,8 @@ public class ContadorController {
 
                 lRepo.deleteById(login.getId());
             }else{
-                String urlImage = null;
-
-                if(!file.isEmpty() && file != null){
-                    String imagen = storageService.store(file);
-                    urlImage = MvcUriComponentsBuilder.fromMethodName(FicherosController.class,"serveFile",imagen,null).build().toUriString();
-                }
-
                 Contador c = ContadorMapper.getInstance().contadorFromDTO(contador);
-                c.setImage(urlImage);
+                c.setImage(contador.getImage());
                 
                 if(gRepo.existsById(contador.getGroup())){
                     Grupo g = gRepo.findById(contador.getGroup()).get();
@@ -102,10 +97,45 @@ public class ContadorController {
                     ans = "No existe grupo con id "+contador.getGroup();
                 }
             }
+        }else{
+            ans = "Error de sesion";
+            status = HttpStatus.UNAUTHORIZED;
         }
 
         return ResponseEntity.status(status).body(ans);
     }
+
+    @PostMapping( "/counter/addImage")
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("token") String token){
+        String ans = "";
+        HttpStatus status = HttpStatus.ACCEPTED;
+
+        if(lRepo.existsByToken(token)){
+            Login login = lRepo.findByToken(token);
+            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+                ans = "La sesion ha expirado";
+                status = HttpStatus.UNAUTHORIZED;
+            }else{
+                String urlImage = null;
+
+                if(!image.isEmpty() && image != null){
+                    String imagen = storageService.store(image);
+                    urlImage = MvcUriComponentsBuilder.fromMethodName(FicherosController.class,"serveFile",imagen,null).build().toUriString();
+                }else{
+                    urlImage = "https://www.familiasnumerosascv.org/wp-content/uploads/2015/05/icono-camara.png";
+                }
+
+                status = HttpStatus.OK;
+                ans = urlImage;
+            }
+        }else{
+            ans = "Error de sesion";
+            status = HttpStatus.UNAUTHORIZED;
+        }
+
+        return ResponseEntity.status(status).body(ans);
+    }
+
 
     @PutMapping("/counter/edit")
     public ResponseEntity<?> updateCounter(@RequestBody EditContadorDTO c, @RequestParam("token") String token){

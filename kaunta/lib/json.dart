@@ -23,7 +23,7 @@ loadCounters() async {
   }
 
   if (json != "") {
-    Listado().usuario.grupos!.value = User.fromJson(jsonDecode(json)).grupos!;
+    Listado().usuario.value = User.fromJson(jsonDecode(json));
   }
 
   Listado().leido.value = true;
@@ -32,6 +32,5 @@ loadCounters() async {
 saveCounters() async {
   final file = await _localFile();
 
-  await file
-      .writeAsString(jsonEncode(Listado().usuario.toJson(Listado().usuario)));
+  await file.writeAsString(jsonEncode(jsonEncode(Listado().usuario.value)));
 }

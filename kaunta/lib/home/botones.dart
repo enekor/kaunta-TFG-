@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:kaunta/home/home.dart';
 import 'package:kaunta/themes/temas.dart';
 import 'package:kaunta/utils/api_call.dart';
+import 'package:kaunta/utils/shared_preferences.dart';
 import 'package:kaunta/widgets/snackers.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
@@ -29,7 +30,9 @@ class Botones extends StatelessWidget {
                 child: Column(
                   children: [
                     IconButton(
-                      onPressed: () => abrirPagina(const Home(), context),
+                      onPressed: () {
+                        abrirPagina(const Home(), context);
+                      },
                       icon: const Icon(
                         Icons.wifi_off_rounded,
                         color: Colors.redAccent,
@@ -80,6 +83,7 @@ void onClick(BuildContext context) {
 }
 
 void abrirPagina(Widget pagina, BuildContext context) {
+  Navigator.pop(context);
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => pagina,
@@ -105,6 +109,7 @@ void loginRequest(BuildContext context) {
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20.0),
     ),
+    backgroundColor: Temas().getBackground(),
     context: context,
     builder: (context) => FutureBuilder(
       future: ApiCall().testConnection(),
@@ -136,17 +141,70 @@ void loginRequest(BuildContext context) {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             if ((snapshot.data as int) == 200) {
-                              abrirPagina(const Home(), context);
-                              //Navigator.pop(context);
-                              return const Center(
-                                child: Text("Logeado"),
+                              return Center(
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Conectado",
+                                        style: TextStyle(
+                                            color: Temas().getTextColor(),
+                                            fontSize: 25),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Temas().getPrimary(),
+                                            ),
+                                            onPressed: () {
+                                              abrirPagina(
+                                                  const Home(), context);
+                                            },
+                                            child: const Text("Ok"),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Temas().getPrimary(),
+                                            ),
+                                            onPressed: () {
+                                              loginPressed.value = false;
+                                              SharedPreferencesEditor()
+                                                  .postSharedPreferences(
+                                                      "token", "", "String");
+                                            },
+                                            child: const Text("Cancel"),
+                                          ),
+                                        ],
+                                      )
+                                    ]),
                               );
                             } else {
                               return Center(
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text("No logeado"),
+                                    Text(
+                                      "No logeado",
+                                      style: TextStyle(
+                                        color: Temas().getSecondary(),
+                                        fontSize: 35,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 25),
                                     ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Temas().getPrimary(),
+                                      ),
                                       onPressed: () {
                                         Navigator.pop(context);
                                         loginPressed.value = true;
@@ -160,9 +218,12 @@ void loginRequest(BuildContext context) {
                           } else {
                             return Center(
                               child: Column(
-                                children: const [
-                                  CircularProgressIndicator(),
-                                  Text("Iniciando sesion..."),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(
+                                    color: Temas().getPrimary(),
+                                  ),
+                                  const Text("Iniciando sesion..."),
                                 ],
                               ),
                             );
@@ -193,20 +254,50 @@ void loginRequest(BuildContext context) {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             if ((snapshot.data as int) == 202) {
-                              abrirPagina(const Home(), context);
-                              //Navigator.pop(context);
-                              return const Center(
-                                child: Text("Registrado"),
+                              return Center(
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Registrado",
+                                        style: TextStyle(
+                                            color: Temas().getTextColor(),
+                                            fontSize: 25),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Temas().getPrimary(),
+                                        ),
+                                        onPressed: () {
+                                          abrirPagina(const Home(), context);
+                                        },
+                                        child: const Text("Ok"),
+                                      ),
+                                    ]),
                               );
                             } else {
                               return Center(
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text("No se pudo registrar"),
+                                    Text(
+                                      "No se pudo registrar",
+                                      style: TextStyle(
+                                        color: Temas().getSecondary(),
+                                        fontSize: 35,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 25),
                                     ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Temas().getPrimary(),
+                                      ),
                                       onPressed: () {
-                                        Navigator.pop(context);
                                         loginPressed.value = true;
+                                        Navigator.pop(context);
                                       },
                                       child: const Text("ok"),
                                     ),
@@ -217,9 +308,12 @@ void loginRequest(BuildContext context) {
                           } else {
                             return Center(
                               child: Column(
-                                children: const [
-                                  CircularProgressIndicator(),
-                                  Text("Registrando..."),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(
+                                    color: Temas().getPrimary(),
+                                  ),
+                                  const Text("Registrando..."),
                                 ],
                               ),
                             );
@@ -233,7 +327,9 @@ void loginRequest(BuildContext context) {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const CircularProgressIndicator(),
+                CircularProgressIndicator(
+                  color: Temas().getPrimary(),
+                ),
                 Text(
                   "Conectando con la api...",
                   style: TextStyle(
