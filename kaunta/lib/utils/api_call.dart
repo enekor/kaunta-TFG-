@@ -66,18 +66,19 @@ class ApiCall {
     return ans.statusCode;
   }
 
-  Future<String> me() async {
-    String ret = "";
+  Future<int> me() async {
     String token =
         await SharedPreferencesEditor().getSharedPreferences("token", "String");
     var ans =
         await http.get(Uri.parse("${Globales().apiUrl}/user/me?token=$token"));
 
     if (ans.statusCode == 200) {
-      ret = ans.body;
+      Listado().usuario.value = User.fromJson(jsonDecode(ans.body));
+    } else {
+      SharedPreferencesEditor().postSharedPreferences("token", "", "String");
     }
 
-    return ret;
+    return ans.statusCode;
   }
 
   //grupos

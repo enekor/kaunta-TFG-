@@ -12,6 +12,27 @@ import 'package:kaunta/paginas/grupos/ver_grupo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
 
+void abrirPagina(BuildContext context) {
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(
+      builder: (context) => const Botones(),
+    ),
+  );
+}
+
+void onBackPressed(BuildContext context) {
+  if (Globales().pagina.value != 0) {
+    Globales().pagina.value = 0;
+  }
+
+  if (!Globales().verGrupos.value) {
+    Globales().verGrupos.value = true;
+  } else {
+    //abrirPagina(context);
+    Navigator.pop(context);
+  }
+}
+
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -26,29 +47,9 @@ class Home extends StatelessWidget {
       restoreContadores(context)
     ];
 
-    void abrirPagina() {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const Botones(),
-        ),
-      );
-    }
-
-    void onBackPressed() {
-      if (Globales().pagina.value != 0) {
-        Globales().pagina.value = 0;
-      }
-
-      if (!Globales().verGrupos.value) {
-        Globales().verGrupos.value = true;
-      } else {
-        abrirPagina();
-      }
-    }
-
     return WillPopScope(
       onWillPop: () async {
-        onBackPressed();
+        onBackPressed(context);
         return false;
       },
       child: FutureBuilder(
@@ -86,7 +87,7 @@ class Home extends StatelessWidget {
                     ],
                     leading: IconButton(
                       onPressed: () => Globales().verGrupos.value
-                          ? abrirPagina
+                          ? onBackPressed(context)
                           : Globales().verGrupos.value = true,
                       icon: const Icon(Icons.arrow_back_ios_new_rounded),
                     ),

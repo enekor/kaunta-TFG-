@@ -19,12 +19,12 @@ loadCounters() async {
     final file = await _localFile();
 
     json = file.readAsStringSync();
-  } else {
-    json = await ApiCall().me();
-  }
 
-  if (json != "") {
-    Listado().usuario.value = User.fromJson(jsonDecode(json));
+    if (json != "") {
+      Listado().usuario.value = User.fromJson(jsonDecode(json));
+    }
+  } else {
+    await ApiCall().me();
   }
 
   Listado().leido.value = true;
