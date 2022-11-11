@@ -18,10 +18,10 @@ class User {
     }
   }
 
-  Map<String, dynamic> toJson(User u) {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = u.id;
-    data['username'] = u.name!.value;
+    data['id'] = id;
+    data['username'] = name!.value;
     if (grupos != null) {
       data['grupos'] = grupos!.map((v) => v.toJson()).toList();
     }

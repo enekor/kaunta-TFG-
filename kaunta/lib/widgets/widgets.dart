@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/model/edit_contador.dart';
 import 'package:kaunta/model/modelo.dart';
@@ -93,7 +94,7 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
         onTap: () {
           Listado().cActual = c;
 
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const VerContador(),
             ),
@@ -137,7 +138,7 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                           children: [
                             IconButton(
                               onPressed: () async {
-                                if (ApiCall().conectado) {
+                                if (Globales().conectado) {
                                   EditContador contador = EditContador(
                                     counter: 1,
                                     descripcion: c.descrition!.value,
@@ -158,7 +159,7 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
                             ),
                             IconButton(
                               onPressed: () async {
-                                if (ApiCall().conectado) {
+                                if (Globales().conectado) {
                                   EditContador contador = EditContador(
                                     counter: -1,
                                     descripcion: c.descrition!.value,
@@ -295,17 +296,19 @@ Widget cRestoreConterCardItem(Contador c, BuildContext context) => Obx(
 
 void borrarGrupo(Object g, bool isGrupo) async {
   if (isGrupo) {
-    if (ApiCall().conectado) {
+    if (Globales().conectado) {
       Grupo grupo = g as Grupo;
       int codigo = await ApiCall().deleteGroup(grupo.id!);
+      saveCounters();
     } else {
       (g as Grupo).activo!.value = false;
       saveCounters();
     }
   } else {
-    if (ApiCall().conectado) {
+    if (Globales().conectado) {
       Contador c = g as Contador;
       int codigo = await ApiCall().deleteContador(c.id!);
+      saveCounters();
     } else {
       (g as Contador).active!.value = false;
       saveCounters();
@@ -317,17 +320,19 @@ void borrarGrupo(Object g, bool isGrupo) async {
 
 void restaurarGrupo(Object g, bool isGrupo) async {
   if (isGrupo) {
-    if (ApiCall().conectado) {
+    if (Globales().conectado) {
       Grupo grupo = g as Grupo;
       int codigo = await ApiCall().restoreGroup(grupo.id!);
+      saveCounters();
     } else {
       (g as Grupo).activo!.value = true;
       saveCounters();
     }
   } else {
-    if (ApiCall().conectado) {
+    if (Globales().conectado) {
       Contador c = (g as Contador);
       int codigo = await ApiCall().restoreContador(c.id!);
+      saveCounters();
     } else {
       (g as Contador).active!.value = true;
       saveCounters();

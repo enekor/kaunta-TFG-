@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/model/crear_grupo.dart';
 import 'package:kaunta/model/modelo.dart';
@@ -12,12 +13,13 @@ import 'package:kaunta/widgets/snackers.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
 void guardarGrupo(String nombre, BuildContext context) async {
-  if (ApiCall().conectado) {
-    var a = Listado().usuario;
+  if (Globales().conectado) {
     CrearGrupo g =
         CrearGrupo(id: -1, nombre: nombre, user: Listado().usuario.value.id);
 
     int codigo = await ApiCall().createGroup(g);
+
+    saveCounters();
 
     var snack;
     if (codigo == 200) {

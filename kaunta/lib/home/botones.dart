@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/home/home.dart';
 import 'package:kaunta/themes/temas.dart';
 import 'package:kaunta/utils/api_call.dart';
@@ -32,6 +33,7 @@ class Botones extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         abrirPagina(const Home(), context);
+                        Globales().conectado = false;
                       },
                       icon: const Icon(
                         Icons.wifi_off_rounded,

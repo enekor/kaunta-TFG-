@@ -51,7 +51,7 @@ public class ContadorController {
                 if(gRepo.existsById(group)){
                     Grupo g = gRepo.findById(group).get();
                     List<Contador> contadores = repo.findAllByGroupAndActive(g, active);
-                    
+
                     status = HttpStatus.OK;
                     ans = new CountersOutDto(contadores);
                 }else{

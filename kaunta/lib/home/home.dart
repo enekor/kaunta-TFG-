@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/home/botones.dart';
+import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/paginas/contadores/nuevo_contador.dart';
 import 'package:kaunta/paginas/contadores/restore_contadores.dart';
@@ -15,95 +17,122 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    RxInt pagina = 0.obs;
     var paginas = [
-      verGrupos(),
+      verGrupos(context),
       nuevoGrupo(context),
       restoreGrupos(context),
-      verContadores(),
+      verContadores(context),
       nuevoContador(context),
       restoreContadores(context)
     ];
 
-    return FutureBuilder(
-      future: loadCounters(),
-      builder: ((context, snapshot) => Listado().leido.value == true
-          ? Obx(
-              () => Scaffold(
-                backgroundColor: Temas().getBackground(),
-                appBar: AppBar(
-                  backgroundColor: Temas().getPrimary(),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Kaunta  ",
-                        style: TextStyle(color: Temas().getTextColor()),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(
-                        Icons.wifi_off_rounded,
-                        color: Temas().getTextColor(),
+    void abrirPagina() {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const Botones(),
+        ),
+      );
+    }
+
+    void onBackPressed() {
+      if (Globales().pagina.value != 0) {
+        Globales().pagina.value = 0;
+      }
+
+      if (!Globales().verGrupos.value) {
+        Globales().verGrupos.value = true;
+      } else {
+        abrirPagina();
+      }
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        onBackPressed();
+        return false;
+      },
+      child: FutureBuilder(
+        future: loadCounters(),
+        builder: ((context, snapshot) => Listado().leido.value == true
+            ? Obx(
+                () => Scaffold(
+                  backgroundColor: Temas().getBackground(),
+                  appBar: AppBar(
+                    backgroundColor: Temas().getPrimary(),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Kaunta  ",
+                          style: TextStyle(color: Temas().getTextColor()),
+                        ),
+                        const SizedBox(width: 12),
+                        Icon(
+                          Icons.wifi_off_rounded,
+                          color: Temas().getTextColor(),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      IconButton(
+                        onPressed: cambiarTema,
+                        icon: Icon(
+                          Temas().actual.value == 0
+                              ? Icons.dark_mode_rounded
+                              : Icons.light_mode_rounded,
+                          color: Temas().getTextColor(),
+                        ),
                       ),
                     ],
+                    leading: IconButton(
+                      onPressed: () => Globales().verGrupos.value
+                          ? abrirPagina
+                          : Globales().verGrupos.value = true,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    ),
                   ),
-                  actions: [
-                    IconButton(
-                      onPressed: cambiarTema,
-                      icon: Icon(
-                        Temas().actual.value == 0
-                            ? Icons.dark_mode_rounded
-                            : Icons.light_mode_rounded,
-                        color: Temas().getTextColor(),
+                  bottomNavigationBar: NavigationBar(
+                    backgroundColor: Temas().getBackground(),
+                    labelBehavior:
+                        NavigationDestinationLabelBehavior.alwaysHide,
+                    elevation: 200,
+                    height: 60,
+                    destinations: const [
+                      NavigationDestination(
+                        icon: Icon(Icons.home, color: Colors.blueGrey),
+                        label: 'Home',
                       ),
+                      NavigationDestination(
+                        icon: Icon(Icons.add, color: Colors.blueGrey),
+                        label: 'Nuevo',
+                      ),
+                      NavigationDestination(
+                        icon:
+                            Icon(Icons.restore_rounded, color: Colors.blueGrey),
+                        label: "Restore",
+                      ),
+                    ],
+                    onDestinationSelected: (int selected) =>
+                        Globales().pagina.value = selected,
+                    selectedIndex: Globales().pagina.value,
+                  ),
+                  body: Container(
+                    color: Temas().getBackground(),
+                    child: Center(
+                      child: Globales().verGrupos.value == true
+                          ? paginas[Globales().pagina.value]
+                          : paginas[Globales().pagina.value + 3],
                     ),
-                  ],
-                  leading: IconButton(
-                    onPressed: () => Listado().verGrupos.value
-                        ? Navigator.of(context).pop()
-                        : Listado().verGrupos.value = true,
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
                   ),
                 ),
-                bottomNavigationBar: NavigationBar(
-                  backgroundColor: Temas().getBackground(),
-                  labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-                  elevation: 200,
-                  height: 60,
-                  destinations: const [
-                    NavigationDestination(
-                      icon: Icon(Icons.home, color: Colors.blueGrey),
-                      label: 'Home',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.add, color: Colors.blueGrey),
-                      label: 'Nuevo',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.restore_rounded, color: Colors.blueGrey),
-                      label: "Restore",
-                    ),
-                  ],
-                  onDestinationSelected: (int selected) =>
-                      pagina.value = selected,
-                  selectedIndex: pagina.value,
+              )
+            : Container(
+                color: Temas().getBackground(),
+                child: const Center(
+                  child: CircularProgressIndicator(),
                 ),
-                body: Container(
-                  color: Temas().getBackground(),
-                  child: Center(
-                    child: Listado().verGrupos.value == true
-                        ? paginas[pagina.value]
-                        : paginas[pagina.value + 3],
-                  ),
-                ),
-              ),
-            )
-          : Container(
-              color: Temas().getBackground(),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            )),
+              )),
+      ),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/model/crear_contador.dart';
 import 'package:kaunta/model/modelo.dart';
@@ -89,12 +90,12 @@ Widget nuevoContador(BuildContext context) {
                   }
 
                   if (guardable) {
-                    if (ApiCall().conectado) {
+                    if (Globales().conectado) {
                       CrearContador contador = CrearContador(
                         name: nuevoContador.name!.value,
                         count: nuevoContador.count!.value,
                         description: "",
-                        group: Listado().gActual.id,
+                        group: Listado().usuario.value.id!,
                         image: nuevoContador.image!.value,
                       );
 
@@ -112,7 +113,6 @@ Widget nuevoContador(BuildContext context) {
                       guardarContador(nuevoContador);
                       var snack = Snacker().succedSnacker();
                       showSnack(snack, context);
-                      saveCounters();
                     }
                   }
                 },
@@ -130,6 +130,12 @@ guardarContador(Contador nuevoContador) {
   nuevoContador.active = true.obs;
   nuevoContador.descrition = "".obs;
   nuevoContador.id = -1.obs;
-
-  Listado().gActual.counters!.add(nuevoContador);
+  Listado()
+      .usuario
+      .value
+      .grupos![Listado().gActual]
+      .counters!
+      .add(nuevoContador);
+  int u = Listado().usuario.value.grupos![Listado().gActual].counters!.length;
+  saveCounters();
 }

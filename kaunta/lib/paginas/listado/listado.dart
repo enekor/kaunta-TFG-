@@ -18,8 +18,6 @@ class Listado {
     grupos: <Grupo>[].obs,
     name: "Nombre".obs,
   ).obs;
-  Grupo gActual = Grupo(counters: <Contador>[].obs);
+  int gActual = -1;
   Contador cActual = Contador();
-
-  RxBool verGrupos = true.obs;
 }

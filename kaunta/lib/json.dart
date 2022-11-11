@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/model/modelo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/utils/api_call.dart';
@@ -14,7 +15,7 @@ Future<File> _localFile() async {
 
 loadCounters() async {
   String json;
-  if (ApiCall().conectado == false) {
+  if (Globales().conectado == false) {
     final file = await _localFile();
 
     json = file.readAsStringSync();
@@ -32,5 +33,7 @@ loadCounters() async {
 saveCounters() async {
   final file = await _localFile();
 
-  await file.writeAsString(jsonEncode(jsonEncode(Listado().usuario.value)));
+  int u = Listado().usuario.value.grupos![0].counters!.length;
+
+  await file.writeAsString(jsonEncode(Listado().usuario.value.toJson()));
 }
