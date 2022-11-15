@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kunta.kaunta_api.exception.StorageException;
 import com.kunta.kaunta_api.exception.StorageFileNotFoundException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -26,6 +27,9 @@ public class FileSystemStorageService implements StorageService{
     // Directorio raiz de nuestro almacén de ficheros
 
     private final Path rootLocation;
+
+    @Value("${rutaImagenes}")
+    private String rutaImagenes;
 
 
     public FileSystemStorageService(@Value("") String path) {
@@ -44,9 +48,13 @@ public class FileSystemStorageService implements StorageService{
     @Override
     public String store(MultipartFile file) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
-        String extension = StringUtils.getFilenameExtension(filename);
-        String justFilename = filename.replace("."+extension, "");
-        String storedFilename = System.currentTimeMillis() + "_" + justFilename + "." + extension;
+
+        try{
+            Files.createDirectories(Path.of(rutaImagenes));
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + filename);
@@ -58,9 +66,9 @@ public class FileSystemStorageService implements StorageService{
                                 + filename);
             }
             try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, this.rootLocation.resolve(storedFilename),
+                Files.copy(inputStream, Path.of(rutaImagenes+File.separator+filename),
                         StandardCopyOption.REPLACE_EXISTING);
-                return storedFilename;
+                return filename;
             }
         }
         catch (IOException e) {
