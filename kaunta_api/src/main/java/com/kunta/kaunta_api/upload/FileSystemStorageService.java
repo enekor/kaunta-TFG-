@@ -151,7 +151,9 @@ public class FileSystemStorageService implements StorageService{
         }
     }
 
-
+    /**
+     * Método que es capaz de borrar un archivo por su nombre
+     */
     @Override
     public void delete(String filename) {
         String justFilename = StringUtils.getFilename(filename);

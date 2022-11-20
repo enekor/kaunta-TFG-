@@ -2,13 +2,11 @@ package com.kunta.kaunta_api.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.kunta.kaunta_api.dto.CountersOutDto;
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.reporitory.LoginRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +22,6 @@ import com.kunta.kaunta_api.reporitory.GrupoRepository;
 import com.kunta.kaunta_api.upload.StorageService;
 
 import lombok.RequiredArgsConstructor;
-
-import javax.security.auth.login.LoginContext;
 
 @RestController
 @RequiredArgsConstructor

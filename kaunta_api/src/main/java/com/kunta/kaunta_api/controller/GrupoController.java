@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.kunta.kaunta_api.dto.GrupoCreateDTO;
 import com.kunta.kaunta_api.mapper.GrupoMapper;
-import com.kunta.kaunta_api.model.Contador;
 import com.kunta.kaunta_api.model.Grupo;
 import com.kunta.kaunta_api.reporitory.GrupoRepository;
 import com.kunta.kaunta_api.reporitory.UserRepository;
@@ -17,7 +16,6 @@ import com.kunta.kaunta_api.reporitory.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
