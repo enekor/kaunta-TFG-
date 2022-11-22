@@ -25,6 +25,13 @@ public class GrupoController {
     private final GrupoRepository repo;
     private final LoginRepository lRepo;
 
+    /**
+     * devuelve los grupos que pertenezcan al usuario del token,
+     * filtrados por el estado indicado por parametro
+     * @param token la sesion
+     * @param active si el grupo esta activo o no
+     * @return json de los grupos o error
+     */
     @GetMapping("/group/all/{activo}")
     public ResponseEntity<?> getAllByUser(@RequestParam("token")String token,@PathVariable(name = "activo")boolean active){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -43,6 +50,13 @@ public class GrupoController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * crea un grupo en base a la informacion del dto pasado por parametro y lo
+     * añade al usuario al que pertenece el token
+     * @param grupo info del grupo a crear
+     * @param token la sesion
+     * @return confirmacion de modificacion o error
+     */
     @PostMapping("/group/save")
     public ResponseEntity<?> saveGroup(@RequestBody GrupoCreateDTO grupo, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -88,6 +102,13 @@ public class GrupoController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * cambia el nombre del grupo por el pasado por parametro
+     * @param name nombre a cambiar del grupo
+     * @param token la sesion
+     * @param id id del grupo
+     * @return confirmacion de modificacion o error
+     */
     @PutMapping("group/edit/{id}")
     public ResponseEntity<?> editGroup(@RequestParam("name")String name,@RequestParam("token")String token,@PathVariable(name = "id")long id){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -122,6 +143,12 @@ public class GrupoController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * pone como no visible el grupo
+     * @param id id del grupo
+     * @param token la sesion
+     * @return confirmacion de modificacion o error
+     */
     @DeleteMapping("group/delete/{id}")
     public ResponseEntity<?> deleteGroup(@PathVariable(name = "id")long id, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -153,6 +180,12 @@ public class GrupoController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     *pone como visible el grupo
+     * @param id id del grupo
+     * @param token la sesion
+     * @return confirmacion de modificacion o error
+     */
     @PostMapping("/group/restore/{id}")
     public ResponseEntity<?> restoreGroup(@PathVariable(name = "id")long id,@RequestParam("token")String token){
         HttpStatus status = HttpStatus.ACCEPTED;

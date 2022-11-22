@@ -15,6 +15,11 @@ public class ContadorMapper {
         return instance;
     }
 
+    /**
+     * Mapper para pasar de ContadorCreateDTO a Contador
+     * @param dto contador a transformar
+     * @return contador trasnformado
+     */
     public Contador contadorFromDTO(ContadorCreateDTO dto){
         
         Contador ret = new Contador();

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:kaunta/home/globales.dart';
@@ -207,5 +208,27 @@ class ApiCall {
         Uri.parse("${Globales().apiUrl}/counter/restore/$id?token=$token"));
 
     return ans.statusCode;
+  }
+
+  Future<String> uploadImage(File image) async {
+    String ret =
+        "https://www.familiasnumerosascv.org/wp-content/uploads/2015/05/icono-camara.png";
+    String token = await SharedPreferencesEditor()
+        .getSharedPreferences("token", "String") as String;
+
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse("${Globales().apiUrl}/counter/addImage?token=$token"),
+    );
+    request.files.add(http.MultipartFile.fromBytes(
+        "image", image.readAsBytesSync(),
+        filename: image.path));
+
+    var ans = await request.send();
+
+    if (ans.statusCode == 200) {
+      ret = await http.Response.fromStream(ans).toString();
+    }
+    return ret;
   }
 }

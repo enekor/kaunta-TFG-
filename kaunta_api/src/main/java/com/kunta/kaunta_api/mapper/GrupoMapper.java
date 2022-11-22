@@ -16,6 +16,11 @@ public class GrupoMapper {
         return instance;
     }
 
+    /**
+     * Mapper para pasar de GrupoCreateDTO a Grupo
+     * @param dto grupo a transformar
+     * @return grupo trasnformado
+     */
     public Grupo grupoFromDTO(GrupoCreateDTO dto){
         Grupo ret = new Grupo();
         ret.setNombre(dto.getNombre());

@@ -25,6 +25,12 @@ public class FicherosController {
 
     private final StorageService storageService;
 
+    /**
+     * sube el archivo y lo guarda en el directorio especificado en los application.properties
+     * @param filename nombre del archivo
+     * @param request info de la imagen
+     * @return la imagen
+     */
     @GetMapping(value="/files/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {

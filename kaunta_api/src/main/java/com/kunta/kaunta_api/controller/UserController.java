@@ -27,7 +27,13 @@ public class UserController {
     private final UserRepository repo;
     private final LoginRepository lRepo;
 
-
+    /**
+     * en base a un usuario y una contraseña, verifica que ambas sean pertenecientes a
+     * un usuario de la base de datos, genera un token, y devuelve dicho token
+     * @param username nombre del usuario
+     * @param password password del usuario
+     * @return token de sesion o mensaje de error
+     */
     @GetMapping("/login")
     public ResponseEntity<?> login (@RequestParam("username") String username, @RequestParam("password") String password){
         
@@ -78,6 +84,12 @@ public class UserController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * crea un usuario a partir del objeto pasado por dto, siempre y
+     * cuando el nombre de usuario no exista previamente en la base de datos
+     * @param userReg info del usuario a crear
+     * @return confirmacion de modificacion o error
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserRegiterDTO userReg){
 
@@ -110,6 +122,11 @@ public class UserController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * devuelve el usuario al que pertenece el token
+     * @param token la sesion
+     * @return json del usuario o mensaje de error
+     */
     @GetMapping("/user/me")
     public ResponseEntity<?> me(@RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;

@@ -8,5 +8,13 @@ import com.kunta.kaunta_api.model.Contador;
 import com.kunta.kaunta_api.model.Grupo;
 
 public interface ContadorRepository extends JpaRepository<Contador,Long>{
-    public List<Contador> findAllByGroupAndActive(Grupo group, boolean active);
+
+    /**
+     *  devuelve todos los contadores de un grupo y que
+     *  cumplan los requisitos de visibilidad de la base de datos
+     * @param group filtro grupo
+     * @param active si es activo o no
+     * @return lista de contadores
+     */
+    List<Contador> findAllByGroupAndActive(Grupo group, boolean active);
 }

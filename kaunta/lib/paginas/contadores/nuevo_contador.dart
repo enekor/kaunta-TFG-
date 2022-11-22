@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/json.dart';
 import 'package:kaunta/model/crear_contador.dart';
@@ -10,13 +13,13 @@ import 'package:kaunta/utils/api_call.dart';
 import 'package:kaunta/widgets/snackers.dart';
 import 'package:kaunta/widgets/widgets.dart';
 
+final ImagePicker _imgPicker = ImagePicker();
+RxString imagen =
+    "https://www.familiasnumerosascv.org/wp-content/uploads/2015/05/icono-camara.png"
+        .obs;
+
 Widget nuevoContador(BuildContext context) {
-  Contador nuevoContador = Contador(
-      name: "".obs,
-      count: 0.obs,
-      image:
-          "https://www.familiasnumerosascv.org/wp-content/uploads/2015/05/icono-camara.png"
-              .obs);
+  Contador nuevoContador = Contador(name: "".obs, count: 0.obs, image: imagen);
 
   return Obx(
     () => Container(
@@ -55,25 +58,24 @@ Widget nuevoContador(BuildContext context) {
                 Temas().cContadorValido,
               ),
               const SizedBox(height: 15),
-              cTextField(
-                (String valor) {
-                  if (valor.endsWith(".png") ||
-                      valor.endsWith(".jpg") ||
-                      valor.endsWith(".jpeg")) {
-                    nuevoContador.image!.value = valor;
-                    Temas().cImagenValido.value = true;
-                  } else if (valor == "") {
-                    nuevoContador.image!.value =
-                        "https://www.familiasnumerosascv.org/wp-content/uploads/2015/05/icono-camara.png";
-                    Temas().cImagenValido.value = true;
-                  } else {
-                    Temas().cImagenValido.value = false;
-                  }
-                },
-                "Imagen del contador ( .png | .jpg | .jpeg)",
-                Icons.link_rounded,
-                Temas().cImagenValido,
-              ),
+              Globales().conectado
+                  ? ElevatedButton(
+                      onPressed: elegirImagen,
+                      child: Text(
+                        "Seleccionar imagen",
+                        style: TextStyle(
+                          color: Temas().getButtonTextColor(),
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
+                  : Text(
+                      "Se usara la imagen por defecto al estar sin conexion",
+                      style: TextStyle(
+                        color: Temas().getTextColor(),
+                        fontSize: 25,
+                      ),
+                    ),
               const SizedBox(height: 15),
               OutlinedButton(
                 onPressed: () async {
@@ -138,4 +140,12 @@ guardarContador(Contador nuevoContador) {
       .add(nuevoContador);
   int u = Listado().usuario.value.grupos![Listado().gActual].counters!.length;
   saveCounters();
+}
+
+elegirImagen() async {
+  final XFile? fileImagen =
+      await _imgPicker.pickImage(source: ImageSource.gallery);
+  File file = File(fileImagen!.path);
+
+  imagen.value = await ApiCall().uploadImage(file);
 }

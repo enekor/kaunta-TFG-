@@ -32,6 +32,13 @@ public class ContadorController {
     private final GrupoRepository gRepo;
     private final StorageService storageService;
 
+    /**
+     * devuelve los contadores que pertenezcan al grupo especificado, filtrados por el estado indicado por parametro
+     * @param active si los contadores son visibles o no
+     * @param token la sesion
+     * @param group el grupo al que pertenecen los contadores
+     * @return json de los contadores o el error
+     */
     @GetMapping("/counter/all/{active}")
     public ResponseEntity<?> getAllCountersFromGroupAndActive(@PathVariable(name = "active") boolean active,@RequestParam("token")String token, @RequestParam("group")long group){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -63,6 +70,12 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * crea un contador a partir de los datos proporcionados en el dto pasado por parametro
+     * @param contador informacion de creacion de contador
+     * @param token la sesion
+     * @return String confirmando la creacion o el error
+     */
     @PostMapping("/counter/add")
     public ResponseEntity<?> createCounter(@RequestBody ContadorCreateDTO contador, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -101,6 +114,12 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * sube la imagen pasada por parametro y devuelve el link de la imagen en la api
+     * @param image imagen a subir
+     * @param token la sesion
+     * @return la url de la imagen
+     */
     @PostMapping( "/counter/addImage")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("token") String token){
         String ans = "";
@@ -132,7 +151,12 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
-
+    /**
+     * actualiza el contador sumando el numero pasado por parametro
+     * @param c info de contador a modificar
+     * @param token la sesion
+     * @return confirmacion de modificacion o error
+     */
     @PutMapping("/counter/edit")
     public ResponseEntity<?> updateCounter(@RequestBody EditContadorDTO c, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -169,6 +193,12 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     * pone como no visible el contador
+     * @param id id del contador
+     * @param token la sesion
+     * @return confirmacion de modificacion o error
+     */
     @DeleteMapping("/counter/delete/{id}")
     public ResponseEntity<?> deleteContador(@PathVariable(name = "id")long id, @RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
@@ -203,6 +233,12 @@ public class ContadorController {
         return ResponseEntity.status(status).body(ans);
     }
 
+    /**
+     *  pone en visible el contador
+     * @param id id del contador
+     * @param token la sesion
+     * @return confirmacion de modificacion o error
+     */
     @PostMapping("/counter/restore/{id}")
     public ResponseEntity<?> restoreContador(@PathVariable(name = "id")long id,@RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
