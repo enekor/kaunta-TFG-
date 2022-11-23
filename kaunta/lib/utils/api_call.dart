@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/model/crear_contador.dart';
@@ -220,9 +221,12 @@ class ApiCall {
       "POST",
       Uri.parse("${Globales().apiUrl}/counter/addImage?token=$token"),
     );
+
+    List<String> nombreList = image.path.split("/");
+    String nombre = nombreList[nombreList.length - 1];
     request.files.add(http.MultipartFile.fromBytes(
         "image", image.readAsBytesSync(),
-        filename: image.path));
+        filename: nombre));
 
     var ans = await request.send();
 
