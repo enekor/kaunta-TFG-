@@ -30,7 +30,7 @@ import java.util.Optional;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GrupoControllerTest {
-    /*
+    
     @InjectMocks
     private GrupoController controller;
 
@@ -65,9 +65,9 @@ public class GrupoControllerTest {
         grupo.setUser(user);
     }
 
-    *//**
+    /**
      * saveGroup()
-     *//*
+     */
     @Test
     @Order(1)
     void saveGroupTest(){
@@ -85,5 +85,68 @@ public class GrupoControllerTest {
             ()->assertNotNull(ans),
             ()->assertEquals(ans, "Grupo creado")
         );
-    }*/
+    }
+
+    /**
+     * updateGroup()
+     */
+    @Test
+    @Order(2)
+    void updateGroupTest(){
+        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(repo.existsById(any())).thenReturn(true);
+        when(repo.save(any())).thenReturn(contador);
+        when(repo.findById(any())).thenReturn(Optional.of(contador));
+        when(lRepo.existsByToken(any())).thenReturn(true);
+
+        ResponseEntity<?> response = controller.updateCounter(editContadorDTO,"");
+        String ans = (String)response.getStatusCode();
+
+        assertAll(
+            ()->assertNotNull(ans),
+            ()->assertEquals(ans,200)
+        );
+    }
+
+    /**
+     * deleteContador()
+     */
+    @Test
+    @Order(3)
+    void deleteContadorTest(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(repo.existsById(any())).thenReturn(true);
+        when(repo.save(any())).thenReturn(contador);
+
+        ResponseEntity<?> response = controller.deleteContador(1, "");
+        String ans = (String) response.getBody();
+
+        assertAll(
+            ()->assertNotNull(ans),
+            ()->assertEquals(ans, "Contador borrado con exito")
+        );
+    }
+
+    /**
+     * restoreContador()
+     */
+    @Test
+    @Order(4)
+    void restoreContadorTest(){
+
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(repo.existsById(any())).thenReturn(true);
+        when(repo.findById(any())).thenReturn(Optional.of(contador));
+        when(repo.save(any())).thenReturn(contador);
+
+        ResponseEntity<?> response = controller.restoreContador(1, "");
+        String ans = (String)response.getBody();
+
+        assertAll(
+            ()->assertNotNull(ans),
+            ()->assertEquals(ans,"Contador restaurado con exito")
+        );
+    }
 }
