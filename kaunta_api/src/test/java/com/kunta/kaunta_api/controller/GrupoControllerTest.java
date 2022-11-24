@@ -95,12 +95,12 @@ public class GrupoControllerTest {
     void updateGroupTest(){
         when(LocalDateTime.now().isAfter(any())).thenReturn(false);
         when(repo.existsById(any())).thenReturn(true);
-        when(repo.save(any())).thenReturn(contador);
-        when(repo.findById(any())).thenReturn(Optional.of(contador));
+        when(repo.save(any())).thenReturn(grupo);
+        when(repo.findById(any())).thenReturn(Optional.of(grupo));
         when(lRepo.existsByToken(any())).thenReturn(true);
 
-        ResponseEntity<?> response = controller.updateCounter(editContadorDTO,"");
-        String ans = (String)response.getStatusCode();
+        ResponseEntity<?> response = controller.editGroup("aa","token",grupo.getId());
+        int ans = response.getStatusCodeValue();
 
         assertAll(
             ()->assertNotNull(ans),
@@ -117,14 +117,14 @@ public class GrupoControllerTest {
         when(lRepo.existsByToken(any())).thenReturn(true);
         when(LocalDateTime.now().isAfter(any())).thenReturn(false);
         when(repo.existsById(any())).thenReturn(true);
-        when(repo.save(any())).thenReturn(contador);
+        when(repo.save(any())).thenReturn(grupo);
 
-        ResponseEntity<?> response = controller.deleteContador(1, "");
-        String ans = (String) response.getBody();
+        ResponseEntity<?> response = controller.deleteGroup(1, "");
+        int ans = response.getStatusCodeValue();
 
         assertAll(
             ()->assertNotNull(ans),
-            ()->assertEquals(ans, "Contador borrado con exito")
+            ()->assertEquals(ans, 200)
         );
     }
 
@@ -138,15 +138,15 @@ public class GrupoControllerTest {
         when(lRepo.existsByToken(any())).thenReturn(true);
         when(LocalDateTime.now().isAfter(any())).thenReturn(false);
         when(repo.existsById(any())).thenReturn(true);
-        when(repo.findById(any())).thenReturn(Optional.of(contador));
-        when(repo.save(any())).thenReturn(contador);
+        when(repo.findById(any())).thenReturn(Optional.of(grupo));
+        when(repo.save(any())).thenReturn(grupo);
 
-        ResponseEntity<?> response = controller.restoreContador(1, "");
-        String ans = (String)response.getBody();
+        ResponseEntity<?> response = controller.restoreGroup(1, "");
+        int ans = response.getStatusCodeValue();
 
         assertAll(
             ()->assertNotNull(ans),
-            ()->assertEquals(ans,"Contador restaurado con exito")
+            ()->assertEquals(ans,200)
         );
     }
 }
