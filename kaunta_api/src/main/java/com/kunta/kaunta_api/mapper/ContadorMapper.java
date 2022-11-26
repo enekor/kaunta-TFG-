@@ -2,18 +2,10 @@ package com.kunta.kaunta_api.mapper;
 
 import com.kunta.kaunta_api.dto.ContadorCreateDTO;
 import com.kunta.kaunta_api.model.Contador;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ContadorMapper {
-    
-    private static ContadorMapper instance = null;
-    private ContadorMapper(){}
-
-    public static ContadorMapper getInstance(){
-        if(instance == null){
-            instance = new ContadorMapper();
-        }
-        return instance;
-    }
 
     /**
      * Mapper para pasar de ContadorCreateDTO a Contador

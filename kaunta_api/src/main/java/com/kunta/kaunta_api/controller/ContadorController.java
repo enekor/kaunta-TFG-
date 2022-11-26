@@ -6,6 +6,7 @@ import java.util.List;
 import com.kunta.kaunta_api.dto.CountersOutDto;
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,8 @@ public class ContadorController {
     private final LoginRepository lRepo;
     private final GrupoRepository gRepo;
     private final StorageService storageService;
+    private final IsAfterCheck isAfterCheck;
+    private final ContadorMapper contadorMapper;
 
     /**
      * devuelve los contadores que pertenezcan al grupo especificado, filtrados por el estado indicado por parametro
@@ -47,7 +50,7 @@ public class ContadorController {
         if(lRepo.existsByToken(token)){
 
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 ans = "La sesion ha caducado";
                 status = HttpStatus.UNAUTHORIZED;
             }else{
@@ -84,13 +87,13 @@ public class ContadorController {
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
 
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
                 lRepo.deleteById(login.getId());
             }else{
-                Contador c = ContadorMapper.getInstance().contadorFromDTO(contador);
+                Contador c = contadorMapper.contadorFromDTO(contador);
                 c.setImage(contador.getImage());
                 
                 if(gRepo.existsById(contador.getGroup())){
@@ -127,7 +130,7 @@ public class ContadorController {
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 ans = "La sesion ha expirado";
                 status = HttpStatus.UNAUTHORIZED;
             }else{
@@ -164,7 +167,7 @@ public class ContadorController {
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
@@ -206,7 +209,7 @@ public class ContadorController {
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
@@ -246,7 +249,7 @@ public class ContadorController {
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                status = HttpStatus.UNAUTHORIZED;
                ans = "La sesion ha expirado";
 

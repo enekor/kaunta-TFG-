@@ -3,6 +3,7 @@ package com.kunta.kaunta_api.controller;
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.model.User;
 import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class GrupoController {
     private final UserRepository uRepo;
     private final GrupoRepository repo;
     private final LoginRepository lRepo;
+    private final IsAfterCheck isAfterCheck;
 
     /**
      * devuelve los grupos que pertenezcan al usuario del token,
@@ -65,7 +67,7 @@ public class GrupoController {
         if(lRepo.existsByToken(token)) {
 
             Login login = lRepo.findByToken(token);
-            if (LocalDateTime.now().isAfter(login.getExpireDate())) {
+            if (!isAfterCheck.isAfter(login)) {
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
@@ -117,7 +119,7 @@ public class GrupoController {
         if(lRepo.existsByToken(token)){
 
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 ans = "La sesion ha expirado";
                 status = HttpStatus.UNAUTHORIZED;
             }else{
@@ -156,7 +158,7 @@ public class GrupoController {
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha caducado";
 
@@ -194,7 +196,7 @@ public class GrupoController {
         if(lRepo.existsByToken(token)){
 
             Login login = lRepo.findByToken(token);
-            if(LocalDateTime.now().isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 

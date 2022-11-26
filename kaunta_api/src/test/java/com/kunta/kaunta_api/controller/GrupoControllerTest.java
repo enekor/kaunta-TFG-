@@ -1,19 +1,16 @@
 package com.kunta.kaunta_api.controller;
 
-import com.kunta.kaunta_api.dto.GrupoCreateDTO;
-import com.kunta.kaunta_api.mapper.GrupoMapper;
-import com.kunta.kaunta_api.model.Grupo;
-import com.kunta.kaunta_api.model.User;
-import com.kunta.kaunta_api.reporitory.GrupoRepository;
-import com.kunta.kaunta_api.reporitory.LoginRepository;
-import com.kunta.kaunta_api.reporitory.UserRepository;
-
+import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
+import com.kunta.kaunta_api.reporitory.*;
+import com.kunta.kaunta_api.mapper.*;
+import com.kunta.kaunta_api.model.*;
+import com.kunta.kaunta_api.dto.*;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,16 +41,19 @@ public class GrupoControllerTest {
     private UserRepository uRepo;
 
     @MockBean
+    private IsAfterCheck isAfterCheck;
+
+    @MockBean
     private GrupoMapper mapper;
 
-    Grupo grupo;
-    User user;
-    GrupoCreateDTO grupoDTO;
+    private Grupo grupo;
+    private User user;
+    private GrupoCreateDTO grupoDTO;
+    private Login loginInvalido;
+    private Login loginValido;
 
     @BeforeAll
     void init(){
-        controller = new GrupoController(uRepo, repo, lRepo);
-
         user = new User();
         grupoDTO = new GrupoCreateDTO();
 
@@ -63,6 +63,18 @@ public class GrupoControllerTest {
         grupo.setId(1L);
         grupo.setNombre("test");
         grupo.setUser(user);
+
+        loginValido = new Login();
+        loginValido.setIdUsuario(1L);
+        loginValido.setToken("");
+        loginValido.setExpireDate(LocalDateTime.of(2030,12,12,14,45));
+
+        loginInvalido = new Login();
+        loginValido.setIdUsuario(1L);
+        loginValido.setToken("");
+        loginValido.setExpireDate(LocalDateTime.of(1800,12,12,14,45));
+
+        controller = new GrupoController(uRepo, repo, lRepo,isAfterCheck);
     }
 
     /**
@@ -72,7 +84,7 @@ public class GrupoControllerTest {
     @Order(1)
     void saveGroupTest(){
         when(lRepo.existsByToken(any())).thenReturn(true);
-        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(mapper.grupoFromDTO(any())).thenReturn(grupo);
         when(uRepo.existsById(any())).thenReturn(true);
         when(uRepo.findById(any())).thenReturn(Optional.of(user));
@@ -93,7 +105,7 @@ public class GrupoControllerTest {
     @Test
     @Order(2)
     void updateGroupTest(){
-        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(repo.existsById(any())).thenReturn(true);
         when(repo.save(any())).thenReturn(grupo);
         when(repo.findById(any())).thenReturn(Optional.of(grupo));
@@ -115,7 +127,7 @@ public class GrupoControllerTest {
     @Order(3)
     void deleteContadorTest(){
         when(lRepo.existsByToken(any())).thenReturn(true);
-        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(repo.existsById(any())).thenReturn(true);
         when(repo.save(any())).thenReturn(grupo);
 
@@ -136,7 +148,7 @@ public class GrupoControllerTest {
     void restoreContadorTest(){
 
         when(lRepo.existsByToken(any())).thenReturn(true);
-        when(LocalDateTime.now().isAfter(any())).thenReturn(false);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(repo.existsById(any())).thenReturn(true);
         when(repo.findById(any())).thenReturn(Optional.of(grupo));
         when(repo.save(any())).thenReturn(grupo);

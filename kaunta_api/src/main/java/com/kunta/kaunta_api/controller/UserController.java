@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ public class UserController {
     
     private final UserRepository repo;
     private final LoginRepository lRepo;
+    private final IsAfterCheck isAfterCheck;
 
     /**
      * en base a un usuario y una contraseña, verifica que ambas sean pertenecientes a
@@ -45,12 +47,11 @@ public class UserController {
             User u = repo.findByUsername(username);
             if(u.getPassword().equals(password)){
                 String token = "";
-                LocalDateTime now = LocalDateTime.now();
 
                 if(lRepo.existsByIdUsuario(u.getId())){
                     Login login = lRepo.findByIdUsuario(u.getId());
 
-                    if(now.isAfter(login.getExpireDate())){
+                    if(!isAfterCheck.isAfter(login)){
                         status = HttpStatus.UNAUTHORIZED;
                         ans = "La sesion ha expirado";
 
@@ -65,7 +66,7 @@ public class UserController {
                     Login login = new Login();
                     login.setToken(UUID.randomUUID().toString());
                     login.setIdUsuario(u.getId());
-                    login.setExpireDate(now.plusWeeks(2));
+                    login.setExpireDate(LocalDateTime.now().plusWeeks(2));
 
                     lRepo.save(login);
 
@@ -131,13 +132,12 @@ public class UserController {
     public ResponseEntity<?> me(@RequestParam("token") String token){
         HttpStatus status = HttpStatus.ACCEPTED;
         Object ans = "";
-        LocalDateTime now = LocalDateTime.now();
         
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
 
-            if(now.isAfter(login.getExpireDate())){
+            if(!isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
