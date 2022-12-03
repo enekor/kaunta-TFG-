@@ -2,7 +2,7 @@ package com.kunta.kaunta_api.controller;
 
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.model.User;
-import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.repository.LoginRepository;
 import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import com.kunta.kaunta_api.dto.GrupoCreateDTO;
 import com.kunta.kaunta_api.mapper.GrupoMapper;
 import com.kunta.kaunta_api.model.Grupo;
-import com.kunta.kaunta_api.reporitory.GrupoRepository;
-import com.kunta.kaunta_api.reporitory.UserRepository;
+import com.kunta.kaunta_api.repository.GrupoRepository;
+import com.kunta.kaunta_api.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +24,7 @@ public class GrupoController {
     private final GrupoRepository repo;
     private final LoginRepository lRepo;
     private final IsAfterCheck isAfterCheck;
+    private final GrupoMapper grupoMapper;
 
     /**
      * devuelve los grupos que pertenezcan al usuario del token,
@@ -67,14 +66,14 @@ public class GrupoController {
         if(lRepo.existsByToken(token)) {
 
             Login login = lRepo.findByToken(token);
-            if (!isAfterCheck.isAfter(login)) {
+            if (isAfterCheck.isAfter(login)) {
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
                 lRepo.deleteById(login.getId());
             } else {
                 if (grupo.getId() == -1) {
-                    Grupo add = GrupoMapper.getInstance().grupoFromDTO(grupo);
+                    Grupo add = grupoMapper.grupoFromDTO(grupo);
                     
                     if (uRepo.existsById(grupo.getUser())) {
                         add.setUser(uRepo.findById(grupo.getUser()).get());
@@ -105,47 +104,6 @@ public class GrupoController {
     }
 
     /**
-     * cambia el nombre del grupo por el pasado por parametro
-     * @param name nombre a cambiar del grupo
-     * @param token la sesion
-     * @param id id del grupo
-     * @return confirmacion de modificacion o error
-     */
-    @PutMapping("group/edit/{id}")
-    public ResponseEntity<?> editGroup(@RequestParam("name")String name,@RequestParam("token")String token,@PathVariable(name = "id")long id){
-        HttpStatus status = HttpStatus.ACCEPTED;
-        String ans = "";
-
-        if(lRepo.existsByToken(token)){
-
-            Login login = lRepo.findByToken(token);
-            if(!isAfterCheck.isAfter(login)){
-                ans = "La sesion ha expirado";
-                status = HttpStatus.UNAUTHORIZED;
-            }else{
-                if(repo.existsById(id)){
-                    Grupo g = repo.findById(id).get();
-
-                    g.setNombre(name);
-
-                    repo.save(g);
-
-                    ans = "Grupo cambiado con exito";
-                    status = HttpStatus.OK;
-                }else{
-                    ans = "No se ha encontrado grupo con id "+id;
-                    status = HttpStatus.NOT_FOUND;
-                }
-            }
-        }else{
-            ans = "Error de sesion";
-            status = HttpStatus.UNAUTHORIZED;
-        }
-
-        return ResponseEntity.status(status).body(ans);
-    }
-
-    /**
      * pone como no visible el grupo
      * @param id id del grupo
      * @param token la sesion
@@ -158,7 +116,7 @@ public class GrupoController {
 
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
-            if(!isAfterCheck.isAfter(login)){
+            if(isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha caducado";
 
@@ -177,7 +135,7 @@ public class GrupoController {
             }
         }else{
             status = HttpStatus.UNAUTHORIZED;
-            ans = "Error de sesion";
+            ans = "La sesion ha caducado";
         }
         return ResponseEntity.status(status).body(ans);
     }
@@ -196,7 +154,7 @@ public class GrupoController {
         if(lRepo.existsByToken(token)){
 
             Login login = lRepo.findByToken(token);
-            if(!isAfterCheck.isAfter(login)){
+            if(isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 

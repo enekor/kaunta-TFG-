@@ -5,7 +5,6 @@ class Temas {
   static final Temas _temasInstance = Temas._internal();
 
   RxInt actual = 1.obs;
-  RxBool cImagenValido = true.obs;
   RxBool cContadorValido = true.obs;
 
   factory Temas() {

@@ -6,9 +6,9 @@ import com.kunta.kaunta_api.mapper.ContadorMapper;
 import com.kunta.kaunta_api.model.Contador;
 import com.kunta.kaunta_api.model.Grupo;
 import com.kunta.kaunta_api.model.Login;
-import com.kunta.kaunta_api.reporitory.ContadorRepository;
-import com.kunta.kaunta_api.reporitory.GrupoRepository;
-import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.repository.ContadorRepository;
+import com.kunta.kaunta_api.repository.GrupoRepository;
+import com.kunta.kaunta_api.repository.LoginRepository;
 import com.kunta.kaunta_api.upload.StorageService;
 
 import com.kunta.kaunta_api.utils.IsAfterCheck;
@@ -22,7 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -31,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = {ContadorController.class})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ContadorControllerTest {
 
@@ -90,6 +88,7 @@ public class ContadorControllerTest {
         editContadorDTO.setName("test");
         editContadorDTO.setDescripcion("test");
         editContadorDTO.setCounter(1);
+        editContadorDTO.setId(1L);
 
         loginValido = new Login();
         loginValido.setIdUsuario(1L);
@@ -97,9 +96,9 @@ public class ContadorControllerTest {
         loginValido.setExpireDate(LocalDateTime.of(2030,12,12,14,45));
 
         loginInvalido = new Login();
-        loginValido.setIdUsuario(1L);
-        loginValido.setToken("");
-        loginValido.setExpireDate(LocalDateTime.of(1800,12,12,14,45));
+        loginInvalido.setIdUsuario(1L);
+        loginInvalido.setToken("");
+        loginInvalido.setExpireDate(LocalDateTime.of(2019,12,12,14,45));
 
         isAfterCheck = new IsAfterCheck();
 
@@ -112,7 +111,6 @@ public class ContadorControllerTest {
      * createCounter()
      */
     @Test
-    @Order(1)
     void createCounterSuccessTest(){
         when(repo.save(any())).thenReturn(contador);
         when(lRepo.existsByToken(any())).thenReturn(true);
@@ -125,7 +123,54 @@ public class ContadorControllerTest {
 
         assertAll(
                 ()-> assertNotNull(ans),
-                ()-> assertEquals("Contador creado con exito",ans)
+                ()-> assertEquals("Contador creado con exito",ans),
+                ()-> assertEquals(200,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void createCounterSesionError(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.createCounter(contadorDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()-> assertEquals("Error de sesion",ans),
+                ()-> assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void createCounterGroupNotFound(){
+        when(repo.save(any())).thenReturn(contador);
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(gRepo.existsById(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.createCounter(contadorDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()-> assertEquals("No existe grupo con id 5",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void createCounterTokenFail(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.createCounter(contadorDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
         );
     }
 
@@ -133,7 +178,6 @@ public class ContadorControllerTest {
      * updateCounter()
      */
     @Test
-    @Order(2)
     void updateCotadorTest(){
         when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(repo.existsById(any())).thenReturn(true);
@@ -146,7 +190,54 @@ public class ContadorControllerTest {
 
         assertAll(
             ()->assertNotNull(ans),
-            ()->assertEquals(ans,"Contador actualizado con exito" )
+            ()->assertEquals(ans,"Contador actualizado con exito"),
+            ()->assertEquals(200,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void updateCounterCounterNotFound(){
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(repo.existsById(any())).thenReturn(false);
+        when(repo.save(any())).thenReturn(contador);
+        when(lRepo.existsByToken(any())).thenReturn(true);
+
+        ResponseEntity<?> response = controller.updateCounter(editContadorDTO,"");
+        String ans = (String)response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("No existe contador con id 1",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void updateCounterTokenFail(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.updateCounter(editContadorDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void updateCounterSesionError(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.updateCounter(editContadorDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()-> assertEquals("Error de sesion",ans),
+                ()-> assertEquals(401,response.getStatusCodeValue())
         );
     }
 
@@ -154,7 +245,6 @@ public class ContadorControllerTest {
      * deleteContador()
      */
     @Test
-    @Order(3)
     void deleteContadorTest(){
         when(lRepo.existsByToken(any())).thenReturn(true);
         when(lRepo.findByToken(any())).thenReturn(loginValido);
@@ -167,15 +257,62 @@ public class ContadorControllerTest {
 
         assertAll(
             ()->assertNotNull(ans),
-            ()->assertEquals(ans, "Contador borrado con exito")
+            ()->assertEquals(ans, "Contador borrado con exito"),
+            ()->assertEquals(200,response.getStatusCodeValue())
         );
     }
+
+    @Test
+    void deleteCounterTokenFail(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.deleteContador(1L,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void deleteCounterSesionError(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.deleteContador(1L,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()-> assertEquals("Error de sesion",ans),
+                ()-> assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void deleteCounterCounterNotFound(){
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(repo.existsById(any())).thenReturn(false);
+        when(lRepo.existsByToken(any())).thenReturn(true);
+
+        ResponseEntity<?> response = controller.deleteContador(1,"");
+        String ans = (String)response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("No se encontro contador con id 1",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
+        );
+    }
+
+
 
     /**
      * restoreContador()
      */
     @Test
-    @Order(4)
     void restoreContadorTest(){
 
         when(lRepo.existsByToken(any())).thenReturn(true);
@@ -190,7 +327,53 @@ public class ContadorControllerTest {
 
         assertAll(
             ()->assertNotNull(ans),
-            ()->assertEquals(ans,"Contador restaurado con exito")
+            ()->assertEquals(ans,"Contador restaurado con exito"),
+            ()->assertEquals(200,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void restoreCounterTokenFail(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.deleteContador(1L,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void restoreCounterSesionError(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.deleteContador(1L,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()-> assertEquals("Error de sesion",ans),
+                ()-> assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void restoreCounterCounterNotFound(){
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(repo.existsById(any())).thenReturn(false);
+        when(lRepo.existsByToken(any())).thenReturn(true);
+
+        ResponseEntity<?> response = controller.deleteContador(1,"");
+        String ans = (String)response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("No se encontro contador con id 1",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
         );
     }
 }

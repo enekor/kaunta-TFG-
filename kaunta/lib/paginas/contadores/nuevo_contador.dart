@@ -80,11 +80,11 @@ Widget nuevoContador(BuildContext context) {
               OutlinedButton(
                 onPressed: () async {
                   bool guardable = false;
+                  bool a = Temas().cContadorValido.value;
 
                   if (nuevoContador.name!.value != "" &&
                       nuevoContador.name != null &&
-                      Temas().cContadorValido.value &&
-                      Temas().cImagenValido.value) {
+                      Temas().cContadorValido.value) {
                     guardable = true;
                   } else {
                     var snack = Snacker().failSnacker();
@@ -97,7 +97,7 @@ Widget nuevoContador(BuildContext context) {
                         name: nuevoContador.name!.value,
                         count: nuevoContador.count!.value,
                         description: "",
-                        group: Listado().usuario.value.id!,
+                        group: Globales().grupo,
                         image: nuevoContador.image!.value,
                       );
 
@@ -111,6 +111,7 @@ Widget nuevoContador(BuildContext context) {
                       }
 
                       showSnack(snack, context);
+                      loadCounters();
                     } else {
                       guardarContador(nuevoContador);
                       var snack = Snacker().succedSnacker();
@@ -147,5 +148,6 @@ elegirImagen() async {
       await _imgPicker.pickImage(source: ImageSource.gallery);
   File file = File(fileImagen!.path);
 
-  imagen.value = await ApiCall().uploadImage(file);
+  String resp = await ApiCall().uploadImage(file);
+  imagen.value = resp;
 }

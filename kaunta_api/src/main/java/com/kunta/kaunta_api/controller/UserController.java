@@ -1,11 +1,10 @@
 package com.kunta.kaunta_api.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.kunta.kaunta_api.model.Login;
-import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.repository.LoginRepository;
 import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kunta.kaunta_api.dto.UserRegiterDTO;
 import com.kunta.kaunta_api.model.User;
-import com.kunta.kaunta_api.reporitory.UserRepository;
+import com.kunta.kaunta_api.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,7 +50,7 @@ public class UserController {
                 if(lRepo.existsByIdUsuario(u.getId())){
                     Login login = lRepo.findByIdUsuario(u.getId());
 
-                    if(!isAfterCheck.isAfter(login)){
+                    if(isAfterCheck.isAfter(login)){
                         status = HttpStatus.UNAUTHORIZED;
                         ans = "La sesion ha expirado";
 
@@ -68,10 +67,10 @@ public class UserController {
                     login.setIdUsuario(u.getId());
                     login.setExpireDate(LocalDateTime.now().plusWeeks(2));
 
-                    lRepo.save(login);
+                    Login ansLogin = lRepo.save(login);
 
                     status = HttpStatus.OK;
-                    ans = login.getToken();
+                    ans = ansLogin.getToken();
                 }
             }else{
                 status = HttpStatus.UNAUTHORIZED;
@@ -115,10 +114,10 @@ public class UserController {
             login.setIdUsuario(u.getId());
             login.setExpireDate(now.plusWeeks(2));
 
-            lRepo.save(login);
+            Login ansLogin = lRepo.save(login);
 
             status = HttpStatus.ACCEPTED;
-            ans = login.getToken();
+            ans = ansLogin.getToken();
         }
         return ResponseEntity.status(status).body(ans);
     }
@@ -137,14 +136,14 @@ public class UserController {
         if(lRepo.existsByToken(token)){
             Login login = lRepo.findByToken(token);
 
-            if(!isAfterCheck.isAfter(login)){
+            if(isAfterCheck.isAfter(login)){
                 status = HttpStatus.UNAUTHORIZED;
                 ans = "La sesion ha expirado";
 
                 lRepo.deleteById(login.getId());
             }else{
                 status = HttpStatus.OK;
-                ans =repo.findById(login.getIdUsuario());
+                ans =repo.findById(login.getIdUsuario()).get();
             }
         }else{
             status = HttpStatus.UNAUTHORIZED;

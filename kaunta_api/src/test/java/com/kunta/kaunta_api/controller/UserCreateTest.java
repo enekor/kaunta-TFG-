@@ -1,10 +1,9 @@
 package com.kunta.kaunta_api.controller;
 
-import com.kunta.kaunta_api.dto.UserDTO;
 import com.kunta.kaunta_api.dto.UserRegiterDTO;
 import com.kunta.kaunta_api.model.Login;
 import com.kunta.kaunta_api.model.User;
-import com.kunta.kaunta_api.reporitory.UserRepository;
+import com.kunta.kaunta_api.repository.UserRepository;
 import com.kunta.kaunta_api.utils.IsAfterCheck;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
@@ -13,9 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.kunta.kaunta_api.reporitory.LoginRepository;
+import com.kunta.kaunta_api.repository.LoginRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -29,22 +27,22 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = {UserController.class})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserCreateTest {
     
     @InjectMocks
-    private UserController uController;
+    private UserController controller;
 
     @MockBean
     private LoginRepository lRepo;
 
     @MockBean
-    private UserRepository uRepo;
+    private UserRepository repo;
 
     @MockBean
     private IsAfterCheck isAfterCheck;
 
+    private Login loginToken;
     private User user;
     private UserRegiterDTO reg;
     private Login login;
@@ -68,93 +66,166 @@ public class UserCreateTest {
         login.setToken("");
         login.setIdUsuario(1L);
 
+        loginToken = new Login();
+        loginToken.setToken("token");
+
         loginValido = new Login();
         loginValido.setIdUsuario(1L);
         loginValido.setToken("");
         loginValido.setExpireDate(LocalDateTime.of(2030,12,12,14,45));
 
         loginInvalido = new Login();
-        loginValido.setIdUsuario(1L);
-        loginValido.setToken("");
-        loginValido.setExpireDate(LocalDateTime.of(1800,12,12,14,45));
+        loginInvalido.setIdUsuario(1L);
+        loginInvalido.setToken("");
+        loginInvalido.setExpireDate(LocalDateTime.of(2019,12,12,14,45));
 
-        uController = new UserController(uRepo,lRepo,isAfterCheck);
+        isAfterCheck = new IsAfterCheck();
+
+        controller = new UserController(repo,lRepo,isAfterCheck);
     }
 
     /**
-     * register
+     * register()
      */
     @Test
-    @Order(1)
     void registerSuccessTest(){
-        when(uRepo.existsByUsername(any())).thenReturn(false);
+        when(repo.existsByUsername(any())).thenReturn(false);
+        when(lRepo.save(any())).thenReturn(loginToken);
 
-        ResponseEntity<?> response = uController.register(reg);
-        int ans = response.getStatusCodeValue();
+        ResponseEntity<?> response = controller.register(reg);
+        String ans = (String) response.getBody();
 
         assertAll(
                 ()->assertNotNull(ans),
-                ()->assertEquals(200,ans)
+                ()->assertEquals("token",ans),
+                ()->assertEquals(202,response.getStatusCodeValue())
         );
     }
 
     @Test
-    @Order(2)
+    void registerFailTest(){
+        when(repo.existsByUsername(any())).thenReturn(true);
+
+        ResponseEntity<?> response = controller.register(reg);
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("ya existe usuario con ese nombre",ans),
+                ()->assertEquals(409,response.getStatusCodeValue())
+        );
+    }
+
+    /**
+     * login()
+     */
+    @Test
     void loginSuccessNewTest(){
-        when(uRepo.existsByUsername(any())).thenReturn(true);
-        when(uRepo.findByUsername(any())).thenReturn(user);
-        when(LocalDate.now().isAfter(any())).thenReturn(false);
-        when(lRepo.existsByIdUsuario(any())).thenReturn(false);
+        user.setPassword("1234");
 
-        ResponseEntity<?> response = uController.login(user.getUsername(),user.getPassword());
-        String ans = (String)response.getBody();
+        when(repo.existsByUsername(any())).thenReturn(true);
+        when(repo.findByUsername(any())).thenReturn(user);
+        when(lRepo.existsByIdUsuario(user.getId())).thenReturn(false);
+        when(lRepo.save(any())).thenReturn(loginToken);
+
+        ResponseEntity<?> response = controller.login("","1234");
+        String ans = (String) response.getBody();
 
         assertAll(
-                ()->assertEquals(200,response.getStatusCodeValue()),
-                ()->assertNotNull(ans)
+                ()->assertNotNull(ans),
+                ()->assertEquals("token",ans),
+                ()->assertEquals(200,response.getStatusCodeValue())
         );
     }
 
     @Test
-    @Order(4)
-    void loginSuccessExistsTest(){
-        when(uRepo.existsByUsername(any())).thenReturn(true);
-        when(uRepo.findByUsername(any())).thenReturn(user);
-        when(LocalDate.now().isAfter(any())).thenReturn(false);
-        when(lRepo.existsByIdUsuario(any())).thenReturn(true);
-        when(lRepo.findByIdUsuario(any())).thenReturn(login);
+    void loginSuccessExistsSuccessTest(){
+        user.setPassword("1234");
 
-        ResponseEntity<?> response = uController.me("");
-        String ans = (String)response.getBody();
+        when(repo.existsByUsername(any())).thenReturn(true);
+        when(repo.findByUsername(any())).thenReturn(user);
+        when(lRepo.existsByIdUsuario(user.getId())).thenReturn(true);
+        when(lRepo.findByIdUsuario(user.getId())).thenReturn(loginValido);
+
+        ResponseEntity<?> response = controller.login("","1234");
+        String ans = (String) response.getBody();
 
         assertAll(
-                ()->assertEquals(200,response.getStatusCodeValue()),
-                ()->assertNotNull(ans)
+                ()->assertNotNull(ans),
+                ()->assertEquals("",ans),
+                ()->assertEquals(200,response.getStatusCodeValue())
         );
-
     }
 
     @Test
-    @Order(3)
+    void loginSuccessExistsFailTest(){
+        user.setPassword("1234");
+
+        when(repo.existsByUsername(any())).thenReturn(true);
+        when(repo.findByUsername(any())).thenReturn(user);
+        when(lRepo.existsByIdUsuario(user.getId())).thenReturn(true);
+        when(lRepo.findByIdUsuario(user.getId())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.login("","1234");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    /**
+     * me()
+     */
+    @Test
     void meSuccessTest(){
         when(lRepo.existsByToken(any())).thenReturn(true);
-        when(LocalDate.now().isAfter(any())).thenReturn(false);
-        when(uRepo.findById(any())).thenReturn(Optional.of(user));
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(repo.findById(any())).thenReturn(Optional.of(user));
 
-        ResponseEntity<?> response = uController.me("");
-        UserDTO ans = (UserDTO)response.getBody();
+        ResponseEntity<?> response = controller.me("");
+        User ans = (User) response.getBody();
 
         assertAll(
-                ()->assertEquals(response.getStatusCodeValue(),200),
-                ()-> {
-                    assert ans != null;
-                    assertEquals(ans.getUsername(),user.getUsername());
-                },
-                ()-> {
-                    assert ans != null;
-                    assertEquals(ans.getGrupos(),user.getGrupos());
-                }
+                ()->assertNotNull(ans),
+                ()->assertEquals(user.getUsername(),ans.getUsername()),
+                ()->assertEquals(200,response.getStatusCodeValue())
         );
+
     }
+
+    @Test
+    void meFailTest(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.me("");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+
+    }
+
+    @Test
+    void meSessionFailTest(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.me("");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("No esta autorizado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+
+    }
+
 
 }

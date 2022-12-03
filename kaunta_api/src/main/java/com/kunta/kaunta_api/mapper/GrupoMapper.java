@@ -2,19 +2,10 @@ package com.kunta.kaunta_api.mapper;
 
 import com.kunta.kaunta_api.dto.GrupoCreateDTO;
 import com.kunta.kaunta_api.model.Grupo;
-import com.kunta.kaunta_api.reporitory.UserRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GrupoMapper {
-    
-    private static GrupoMapper instance = null;
-    private GrupoMapper(){}
-
-    public static GrupoMapper getInstance(){
-        if(instance == null){
-            instance = new GrupoMapper();
-        }
-        return instance;
-    }
 
     /**
      * Mapper para pasar de GrupoCreateDTO a Grupo

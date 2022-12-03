@@ -65,7 +65,12 @@ Widget cGroupListItem(Grupo g, int index, BuildContext context) => Obx(
                 g.nombre!.value,
                 style: TextStyle(color: Temas().getTextColor()),
               ),
-              Text(g.counters!.length.toString(),
+              Text(
+                  g.counters!
+                      .where((item) => item.active!.value)
+                      .toList()
+                      .length
+                      .toString(),
                   style: TextStyle(color: Temas().getTextColor())),
               IconButton(
                 icon: const Icon(Icons.delete),
@@ -110,9 +115,7 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
               children: [
                 Expanded(
                   flex: 2,
-                  child: Image.network(
-                    c.image!.value,
-                  ),
+                  child: Image.network(c.image!.value),
                 ),
                 Expanded(
                   flex: 6,

@@ -19,6 +19,8 @@ Widget verGrupos(BuildContext context) => Container(
                     ? GestureDetector(
                         onTap: () {
                           Listado().gActual = index;
+                          Globales().grupo =
+                              Listado().usuario.value.grupos![index].id!;
 
                           Globales().verGrupos.value = false;
                         },

@@ -228,10 +228,10 @@ class ApiCall {
         "image", image.readAsBytesSync(),
         filename: nombre));
 
-    var ans = await request.send();
+    var response = await request.send();
 
-    if (ans.statusCode == 200) {
-      ret = await http.Response.fromStream(ans).toString();
+    if (response.statusCode == 200) {
+      ret = await response.stream.bytesToString();
     }
     return ret;
   }

@@ -1,4 +1,4 @@
-package com.kunta.kaunta_api.reporitory;
+package com.kunta.kaunta_api.repository;
 
 import com.kunta.kaunta_api.model.Login;
 import org.springframework.data.jpa.repository.JpaRepository;

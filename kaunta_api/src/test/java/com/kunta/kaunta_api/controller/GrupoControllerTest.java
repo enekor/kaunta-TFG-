@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
-import com.kunta.kaunta_api.reporitory.*;
+import com.kunta.kaunta_api.repository.*;
 import com.kunta.kaunta_api.mapper.*;
 import com.kunta.kaunta_api.model.*;
 import com.kunta.kaunta_api.dto.*;
@@ -24,7 +24,6 @@ import java.util.Optional;
 
 @SpringBootTest
 @ContextConfiguration(classes = {GrupoController.class})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GrupoControllerTest {
     
@@ -51,6 +50,7 @@ public class GrupoControllerTest {
     private GrupoCreateDTO grupoDTO;
     private Login loginInvalido;
     private Login loginValido;
+    private GrupoMapper grupoMapper;
 
     @BeforeAll
     void init(){
@@ -64,59 +64,123 @@ public class GrupoControllerTest {
         grupo.setNombre("test");
         grupo.setUser(user);
 
+        grupoDTO = new GrupoCreateDTO();
+        grupoDTO.setNombre("test");
+        grupoDTO.setUser(1L);
+
+        user = new User();
+        user.setId(5L);
+        user.setPassword("pass");
+        user.setUsername("test");
+        user.setGrupos(new ArrayList<>());
+
         loginValido = new Login();
         loginValido.setIdUsuario(1L);
         loginValido.setToken("");
         loginValido.setExpireDate(LocalDateTime.of(2030,12,12,14,45));
 
         loginInvalido = new Login();
-        loginValido.setIdUsuario(1L);
-        loginValido.setToken("");
-        loginValido.setExpireDate(LocalDateTime.of(1800,12,12,14,45));
+        loginInvalido.setIdUsuario(1L);
+        loginInvalido.setToken("");
+        loginInvalido.setExpireDate(LocalDateTime.of(2019,12,12,14,45));
 
-        controller = new GrupoController(uRepo, repo, lRepo,isAfterCheck);
+        grupoMapper = new GrupoMapper();
+
+        isAfterCheck = new IsAfterCheck();
+
+        controller = new GrupoController(uRepo, repo, lRepo,isAfterCheck,grupoMapper);
     }
 
     /**
      * saveGroup()
      */
     @Test
-    @Order(1)
-    void saveGroupTest(){
+    void createGroupSuccessTest(){
+        grupoDTO.setId(-1);
+
         when(lRepo.existsByToken(any())).thenReturn(true);
         when(lRepo.findByToken(any())).thenReturn(loginValido);
-        when(mapper.grupoFromDTO(any())).thenReturn(grupo);
         when(uRepo.existsById(any())).thenReturn(true);
         when(uRepo.findById(any())).thenReturn(Optional.of(user));
-        when(repo.save(any())).thenReturn(grupo);
 
-        ResponseEntity<?> response = controller.saveGroup(grupoDTO, "");
-        String ans = (String)response.getBody();
+        ResponseEntity<?> response = controller.saveGroup(grupoDTO,"");
+        String ans = (String) response.getBody();
 
         assertAll(
-            ()->assertNotNull(ans),
-            ()->assertEquals(ans, "Grupo creado")
+                ()-> assertNotNull(ans),
+                ()-> assertEquals("Grupo creado",ans),
+                ()->assertEquals(200,response.getStatusCodeValue())
+        );
+
+    }
+
+    @Test
+    void createGroupUserNotFoundTest(){
+        grupoDTO.setId(-1);
+
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(uRepo.existsById(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.saveGroup(grupoDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()-> assertNotNull(ans),
+                ()-> assertEquals("No existe usuario con id 1",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
+        );
+
+    }
+
+
+    @Test
+    void updateGroupSuccessTest(){
+        grupoDTO.setId(1);
+
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(uRepo.existsById(any())).thenReturn(true);
+        when(repo.findById(any())).thenReturn(Optional.of(grupo));
+        when(uRepo.findById(any())).thenReturn(Optional.of(user));
+
+        ResponseEntity<?> response = controller.saveGroup(grupoDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()-> assertNotNull(ans),
+                ()-> assertEquals("Grupo actualizado con exito",ans),
+                ()->assertEquals(200,response.getStatusCodeValue())
+        );
+
+    }
+
+    @Test
+    void saveGroupLoginError(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.saveGroup(grupoDTO,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
         );
     }
 
-    /**
-     * updateGroup()
-     */
     @Test
-    @Order(2)
-    void updateGroupTest(){
-        when(lRepo.findByToken(any())).thenReturn(loginValido);
-        when(repo.existsById(any())).thenReturn(true);
-        when(repo.save(any())).thenReturn(grupo);
-        when(repo.findById(any())).thenReturn(Optional.of(grupo));
-        when(lRepo.existsByToken(any())).thenReturn(true);
+    void saveGroupSessionError(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
 
-        ResponseEntity<?> response = controller.editGroup("aa","token",grupo.getId());
-        int ans = response.getStatusCodeValue();
+        ResponseEntity<?> response = controller.saveGroup(grupoDTO,"");
+        String ans = (String) response.getBody();
 
         assertAll(
-            ()->assertNotNull(ans),
-            ()->assertEquals(ans,200)
+                ()->assertNotNull(ans),
+                ()->assertEquals("Error de sesion",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
         );
     }
 
@@ -124,19 +188,64 @@ public class GrupoControllerTest {
      * deleteContador()
      */
     @Test
-    @Order(3)
-    void deleteContadorTest(){
+    void deleteContadorSuccessTest(){
         when(lRepo.existsByToken(any())).thenReturn(true);
         when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(repo.existsById(any())).thenReturn(true);
-        when(repo.save(any())).thenReturn(grupo);
+        when(repo.findById(any())).thenReturn(Optional.of(grupo));
 
-        ResponseEntity<?> response = controller.deleteGroup(1, "");
-        int ans = response.getStatusCodeValue();
+        ResponseEntity<?> response = controller.deleteGroup(1,"");
+        String ans = (String) response.getBody();
 
         assertAll(
-            ()->assertNotNull(ans),
-            ()->assertEquals(ans, 200)
+                ()->assertNotNull(ans),
+                ()->assertEquals("Borrado con exito",ans),
+                ()->assertEquals(200,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void deleteContadorFailTest(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(repo.existsById(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.deleteGroup(1,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("No existe grupo con id 1",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void deleteContadorLoginErrorTest(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.deleteGroup(1,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha caducado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void deleteContadorSessionErrorTest(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.deleteGroup(1,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha caducado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
         );
     }
 
@@ -144,21 +253,64 @@ public class GrupoControllerTest {
      * restoreContador()
      */
     @Test
-    @Order(4)
-    void restoreContadorTest(){
-
+    void restoreContadorSuccessTest(){
         when(lRepo.existsByToken(any())).thenReturn(true);
         when(lRepo.findByToken(any())).thenReturn(loginValido);
         when(repo.existsById(any())).thenReturn(true);
         when(repo.findById(any())).thenReturn(Optional.of(grupo));
-        when(repo.save(any())).thenReturn(grupo);
 
-        ResponseEntity<?> response = controller.restoreGroup(1, "");
-        int ans = response.getStatusCodeValue();
+        ResponseEntity<?> response = controller.restoreGroup(1,"");
+        String ans = (String) response.getBody();
 
         assertAll(
-            ()->assertNotNull(ans),
-            ()->assertEquals(ans,200)
+                ()->assertNotNull(ans),
+                ()->assertEquals("Grupo restaurado con exito",ans),
+                ()->assertEquals(200,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void restoreContadorFailTest(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginValido);
+        when(repo.existsById(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.restoreGroup(1,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("No existe grupo con id 1",ans),
+                ()->assertEquals(404,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void restoreContadorLoginErrorTest(){
+        when(lRepo.existsByToken(any())).thenReturn(true);
+        when(lRepo.findByToken(any())).thenReturn(loginInvalido);
+
+        ResponseEntity<?> response = controller.restoreGroup(1,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("La sesion ha expirado",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
+        );
+    }
+
+    @Test
+    void restoreContadorSessionErrorTest(){
+        when(lRepo.existsByToken(any())).thenReturn(false);
+
+        ResponseEntity<?> response = controller.restoreGroup(1,"");
+        String ans = (String) response.getBody();
+
+        assertAll(
+                ()->assertNotNull(ans),
+                ()->assertEquals("Error de sesion",ans),
+                ()->assertEquals(401,response.getStatusCodeValue())
         );
     }
 }

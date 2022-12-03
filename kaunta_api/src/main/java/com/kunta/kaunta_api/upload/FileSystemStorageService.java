@@ -68,7 +68,9 @@ public class FileSystemStorageService implements StorageService{
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, Path.of(rutaImagenes+File.separator+filename),
                         StandardCopyOption.REPLACE_EXISTING);
-                return filename;
+
+                String ret = filename.replace("http://localhost:7777","");
+                return ret;
             }
         }
         catch (IOException e) {

@@ -1,4 +1,4 @@
-package com.kunta.kaunta_api.reporitory;
+package com.kunta.kaunta_api.repository;
 
 import java.util.List;
 
