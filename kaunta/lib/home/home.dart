@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/home/botones.dart';
@@ -12,14 +14,6 @@ import 'package:kaunta/paginas/grupos/ver_grupo.dart';
 import 'package:kaunta/paginas/listado/listado.dart';
 import 'package:kaunta/themes/temas.dart';
 
-void abrirPagina(BuildContext context) {
-  Navigator.of(context).pushReplacement(
-    MaterialPageRoute(
-      builder: (context) => const Botones(),
-    ),
-  );
-}
-
 void onBackPressed(BuildContext context) {
   if (Globales().pagina.value != 0) {
     Globales().pagina.value = 0;
@@ -28,8 +22,8 @@ void onBackPressed(BuildContext context) {
   if (!Globales().verGrupos.value) {
     Globales().verGrupos.value = true;
   } else {
-    //abrirPagina(context);
-    Navigator.pop(context);
+    //Navigator.pop(context);
+    exit(0);
   }
 }
 

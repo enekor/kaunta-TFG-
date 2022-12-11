@@ -24,12 +24,17 @@ class SharedPreferencesEditor {
     final prefs = await SharedPreferences.getInstance();
     dynamic ret;
 
-    if (tipo == "String") {
-      ret = prefs.getString(clave);
-    } else if (tipo == "int") {
-      ret = prefs.getInt(clave);
-    }
+    if(prefs.containsKey(clave)){
 
+      if (tipo == "String") {
+        ret = prefs.getString(clave);
+      } else if (tipo == "int") {
+        ret = prefs.getInt(clave);
+      }
+
+    }else{
+      ret = tipo=="String"?"null":-1;
+    }
     return ret;
   }
 }

@@ -29,7 +29,7 @@ class VerContador extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         abrirPagina();
-        return false;
+        return true;
       },
       child: Obx(
         () => Scaffold(
@@ -105,7 +105,9 @@ class VerContador extends StatelessWidget {
                               ],
                             ),
                       const SizedBox(height: 20),
-                      Image.network(Listado().cActual.image!.value),
+                      Globales().conectado
+                          ? Image.network(Listado().cActual.image!.value)
+                          : NoNetworkImage(),
                       const SizedBox(height: 20),
                       Text(
                         Listado().cActual.count!.value.toString(),

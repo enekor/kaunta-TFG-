@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:kaunta/home/globales.dart';
 import 'package:kaunta/home/home.dart';
@@ -14,62 +13,56 @@ class Botones extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-        return false;
-      },
-      child: Obx(
-        () => Scaffold(
-          backgroundColor: Temas().getBackground(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => cambiarTema(),
-            child: Icon(Temas().actual.value == 0
-                ? Icons.dark_mode_rounded
-                : Icons.light_mode_rounded),
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 50),
-                  child: Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          abrirPagina(const Home(), context);
-                          Globales().conectado = false;
-                        },
-                        icon: const Icon(
-                          Icons.wifi_off_rounded,
-                          color: Colors.redAccent,
-                        ),
-                      ),
-                      const Text(
-                        "Sin conexion",
-                        style: TextStyle(color: Colors.redAccent),
-                      )
-                    ],
-                  ),
-                ),
-                Column(
+    return Obx(
+      () => Scaffold(
+        backgroundColor: Temas().getBackground(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => cambiarTema(),
+          child: Icon(Temas().actual.value == 0
+              ? Icons.dark_mode_rounded
+              : Icons.light_mode_rounded),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 50),
+                child: Column(
                   children: [
                     IconButton(
-                      onPressed: () => loginRequest(context),
+                      onPressed: () {
+                        abrirPagina(const Home(), context);
+                        Globales().conectado = false;
+                      },
                       icon: const Icon(
-                        Icons.wifi_rounded,
-                        color: Colors.greenAccent,
+                        Icons.wifi_off_rounded,
+                        color: Colors.redAccent,
                       ),
                     ),
                     const Text(
-                      "Conectado",
-                      style: TextStyle(color: Colors.greenAccent),
-                    ),
+                      "Sin conexion",
+                      style: TextStyle(color: Colors.redAccent),
+                    )
                   ],
                 ),
-              ],
-            ),
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () => loginRequest(context),
+                    icon: const Icon(
+                      Icons.wifi_rounded,
+                      color: Colors.greenAccent,
+                    ),
+                  ),
+                  const Text(
+                    "Conectado",
+                    style: TextStyle(color: Colors.greenAccent),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

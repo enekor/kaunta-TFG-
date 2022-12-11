@@ -33,7 +33,8 @@ loadCounters() async {
 saveCounters() async {
   final file = await _localFile();
 
-  int u = Listado().usuario.value.grupos![0].counters!.length;
+  User u = Listado().usuario.value;
+  String a = jsonEncode(Listado().usuario.value.toJson());
 
   await file.writeAsString(jsonEncode(Listado().usuario.value.toJson()));
 }

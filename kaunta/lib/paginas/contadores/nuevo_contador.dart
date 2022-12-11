@@ -35,7 +35,20 @@ Widget nuevoContador(BuildContext context) {
                 style: TextStyle(color: Temas().getTextColor(), fontSize: 25),
               ),
               const SizedBox(height: 15),
-              Image.network(nuevoContador.image!.value),
+              Globales().conectado
+                  ? Image.network(nuevoContador.image!.value)
+                  : Column(
+                      children: [
+                        NoNetworkImage(),
+                        Text(
+                          "Se usara la imagen por defecto al estar sin conexion",
+                          style: TextStyle(
+                            color: Temas().getTextColor(),
+                            fontSize: 25,
+                          ),
+                        ),
+                      ],
+                    ),
               const SizedBox(height: 15),
               cTextField((valor) => nuevoContador.name!.value = valor,
                   "Nombre del contador", Icons.abc, true.obs),
@@ -69,13 +82,7 @@ Widget nuevoContador(BuildContext context) {
                         ),
                       ),
                     )
-                  : Text(
-                      "Se usara la imagen por defecto al estar sin conexion",
-                      style: TextStyle(
-                        color: Temas().getTextColor(),
-                        fontSize: 25,
-                      ),
-                    ),
+                  : Container(),
               const SizedBox(height: 15),
               OutlinedButton(
                 onPressed: () async {

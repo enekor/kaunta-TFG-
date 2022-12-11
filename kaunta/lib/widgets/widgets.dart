@@ -115,7 +115,9 @@ Widget cCardItemContador(Contador c, int index, BuildContext context) => Obx(
               children: [
                 Expanded(
                   flex: 2,
-                  child: Image.network(c.image!.value),
+                  child: Globales().conectado
+                      ? Image.network(c.image!.value)
+                      : NoNetworkImage(),
                 ),
                 Expanded(
                   flex: 6,
@@ -304,7 +306,11 @@ void borrarGrupo(Object g, bool isGrupo) async {
       int codigo = await ApiCall().deleteGroup(grupo.id!);
       saveCounters();
     } else {
-      (g as Grupo).activo!.value = false;
+      User u = Listado().usuario.value;
+      Grupo grupo = g as Grupo;
+      Listado().usuario.value.grupos!.remove(g as Grupo);
+      grupo.activo!.value = false;
+      Listado().usuario.value.grupos!.add(grupo);
       saveCounters();
     }
   } else {
@@ -328,7 +334,10 @@ void restaurarGrupo(Object g, bool isGrupo) async {
       int codigo = await ApiCall().restoreGroup(grupo.id!);
       saveCounters();
     } else {
-      (g as Grupo).activo!.value = true;
+      Grupo grupo = g as Grupo;
+      Listado().usuario!.value.grupos!.remove(g as Grupo);
+      grupo.activo!.value = true;
+      Listado().usuario!.value.grupos!.add(grupo);
       saveCounters();
     }
   } else {
@@ -492,3 +501,5 @@ Widget RegisterWidget(
         ],
       ),
     );
+
+Widget NoNetworkImage() => Image.asset("assets\\images\\noimage.png");

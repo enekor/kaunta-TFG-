@@ -1,0 +1,9 @@
+com.kunta.kaunta_api
+com.kunta.kaunta_api.controller
+com.kunta.kaunta_api.dto
+com.kunta.kaunta_api.exception
+com.kunta.kaunta_api.mapper
+com.kunta.kaunta_api.model
+com.kunta.kaunta_api.repository
+com.kunta.kaunta_api.upload
+com.kunta.kaunta_api.utils

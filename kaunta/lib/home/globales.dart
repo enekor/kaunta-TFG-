@@ -9,7 +9,7 @@ class Globales {
   Globales._internal();
 
   RxInt pagina = 0.obs;
-  String apiUrl = "http://172.31.64.1:7777";
+  String apiUrl = "http://192.168.1.145:7777";
   bool tokenValido = false;
   bool conectado = false;
   RxBool verGrupos = true.obs;
