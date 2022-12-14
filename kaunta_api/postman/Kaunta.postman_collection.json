@@ -1,0 +1,471 @@
+{
+	"info": {
+		"_postman_id": "cb868fa2-60bd-4262-972a-f6e38e575d68",
+		"name": "Kaunta",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19205625"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/login?username=eneko&password=segura",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"login"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "eneko"
+								},
+								{
+									"key": "password",
+									"value": "segura"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\":\"eneko\",\n    \"password\":\"segura\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7777/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET user/me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/user/me?token=858e9f6a-2b66-44dd-93b2-a0d924893fc4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"user",
+								"me"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "858e9f6a-2b66-44dd-93b2-a0d924893fc4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "grupo",
+			"item": [
+				{
+					"name": "crear grupo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":-1,\n    \"nombre\":\"grupo\",\n    \"user\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7777/group/save?token=858e9f6a-2b66-44dd-93b2-a0d924893fc4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"group",
+								"save"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "858e9f6a-2b66-44dd-93b2-a0d924893fc4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "grupos por usuario y visibilidad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/group/all/true?token=c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"group",
+								"all",
+								"true"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit grupo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/group/edit/3?token=0e433fd8-11e6-489e-a56a-1b47d694b37f&name=adios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"group",
+								"edit",
+								"3"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "0e433fd8-11e6-489e-a56a-1b47d694b37f"
+								},
+								{
+									"key": "name",
+									"value": "adios"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "borrar grupo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/group/delete/3?token=9e9789b7-6ca9-4066-802f-bb5ede94ec02",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"group",
+								"delete",
+								"3"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "9e9789b7-6ca9-4066-802f-bb5ede94ec02"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "restore grupo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/group/restore/3?token=9e9789b7-6ca9-4066-802f-bb5ede94ec02",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"group",
+								"restore",
+								"3"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "9e9789b7-6ca9-4066-802f-bb5ede94ec02"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "contador",
+			"item": [
+				{
+					"name": "crear contador",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "counter",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"contador\",\r\n    \"description\":\"hola\",\r\n    \"count\":45,\r\n    \"group\":3,\r\n    \"image\":\"http://localhost:7777/files/1668009028072_connection-27185_960_720.png\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7777/counter/add?token=858e9f6a-2b66-44dd-93b2-a0d924893fc4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"counter",
+								"add"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "858e9f6a-2b66-44dd-93b2-a0d924893fc4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "subir imagen",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/eneko/Pictures/connection-27185_960_720.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:7777/counter/addImage?token=59bc83bd-66ec-46fe-8649-5a928a42f8aa",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"counter",
+								"addImage"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "59bc83bd-66ec-46fe-8649-5a928a42f8aa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "contadores by grupo and active",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/counter/all/true?token=858e9f6a-2b66-44dd-93b2-a0d924893fc4&group=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"counter",
+								"all",
+								"true"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "858e9f6a-2b66-44dd-93b2-a0d924893fc4"
+								},
+								{
+									"key": "group",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editar contador",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":4,\n    \"name\":\"nuevo nombre\",\n    \"counter\":33,\n    \"descripcion\":\"bbbbbbbbbbbbbbbbb\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7777/counter/edit?token=c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"counter",
+								"edit"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "borrar contador",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/counter/delete/4?token=c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"counter",
+								"delete",
+								"4"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "restore contador",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7777/counter/restore/4?token=c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7777",
+							"path": [
+								"counter",
+								"restore",
+								"4"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "c6d7656f-9fcc-4e8e-91ce-2fe4b44572ab"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7777/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7777",
+					"path": [
+						"test"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
